@@ -237,16 +237,6 @@ export class CanvasComponent implements OnInit, AfterViewInit {
       IsPainted: false
     } as ICanvasAction
 
-    draw.Actions[CanvasActions.Rotate] = {
-      IsPainted: false,
-      Value: 30
-    } as ICanvasAction
-
-    draw.Actions[CanvasActions.Resize] = {
-      IsPainted: false,
-      Value: 60
-    } as ICanvasAction
-
     var text = {
       LayerIndex: 4,
       Context: Context.Display,
