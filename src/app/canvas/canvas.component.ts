@@ -259,7 +259,7 @@ export class CanvasComponent implements OnInit, AfterViewInit {
     } as ICanvasAction
     text.Actions[CanvasActions.Resize] = {
       IsPainted: false,
-      Value: 60
+      Value: 160
     } as ICanvasAction
     this.canvasService.pushItem(text)
 
