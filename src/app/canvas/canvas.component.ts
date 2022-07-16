@@ -20,6 +20,7 @@ export class CanvasComponent implements OnInit, AfterViewInit {
   items: ICanvasItem[] = [];
   angle: number = 0;
   resizePercentage: number = 0;
+  resizeStep: number = 10;
   zoomPercentage: number = 0;
   pzoomPercentage: number = 0;
   rotateStep: number = 5;
@@ -40,32 +41,32 @@ export class CanvasComponent implements OnInit, AfterViewInit {
   }
 
   white2transparent() {
-    if(this.selectedItem){
+    if (this.selectedItem) {
       this.canvasService.white2transparent(this.selectedItem);
     }
   }
 
-  visibility(){
+  visibility() {
     this.selectedItem.IsVisible = !this.selectedItem.IsVisible;
     this.render();
   }
 
-  align(align:CanvasItemAlign) {
-    if(this.selectedItem){
-      this.canvasService.align(this.selectedItem,align);
+  align(align: CanvasItemAlign) {
+    if (this.selectedItem) {
+      this.canvasService.align(this.selectedItem, align);
     }
     this.canvasService.renderItems(this.canvasService.items);
   }
 
-  move(direction:CanvasItemDirection) {
-    if(this.selectedItem){
-      this.canvasService.move(this.selectedItem,direction);
+  move(direction: CanvasItemDirection) {
+    if (this.selectedItem) {
+      this.canvasService.move(this.selectedItem, direction);
     }
     this.canvasService.renderItems(this.canvasService.items);
   }
 
   zoom($element: any) {
-    var value = $element.target.valueAsNumber;
+    let value = $element.target.valueAsNumber;
     if (value == 0) {
       this.canvasHeight = 1000
     } else if (value == 0 || value > this.pzoomPercentage) {
@@ -124,9 +125,32 @@ export class CanvasComponent implements OnInit, AfterViewInit {
     this.canvasService.renderItems(this.items);
   }
 
+  private plusOrMinusAction($element: any, action: CanvasActions, step: number = 5, isNegative: boolean = false) {
+    $element.stopPropagation();
+    let value = this.selectedItem?.Actions[action]?.Value ?? 0;
+    if (isNegative) {
+      value -= step;
+    } else {
+      value += step;
+    }
+    $element.target.value = value;
+    $element.target.valueAsNumber = +value;
+  }
+
+  increaseResize($element: any) {
+    this.plusOrMinusAction($element, CanvasActions.Resize, this.resizeStep);
+    this.resize($element);
+
+  }
+
+  decreaseResize($element: any) {
+    this.plusOrMinusAction($element, CanvasActions.Resize, this.resizeStep, true);
+    this.resize($element);
+  }
+
   resize($element: any) {
     $element.stopPropagation();
-    var item = this.selectedItem;
+    let item = this.selectedItem;
     this.resizePercentage = $element.target.valueAsNumber;
     if (!item.Actions[CanvasActions.Resize]) {
       item.Actions[CanvasActions.Resize] = {} as ICanvasAction;
@@ -137,9 +161,20 @@ export class CanvasComponent implements OnInit, AfterViewInit {
     this.render();
   }
 
+  increaseRotate($element: any) {
+    this.plusOrMinusAction($element, CanvasActions.Rotate, this.rotateStep);
+    this.rotate($element);
+
+  }
+
+  decreaseRotate($element: any) {
+    this.plusOrMinusAction($element, CanvasActions.Rotate, this.rotateStep,true);
+    this.rotate($element);
+  }
+
   rotate($element: any) {
     $element.stopPropagation();
-    var item = this.selectedItem;
+    let item = this.selectedItem;
     this.angle = $element.target.value;
     item.Actions[CanvasActions.Rotate] = item.Actions[CanvasActions.Rotate] ? item.Actions[CanvasActions.Rotate] : { Value: this.angle } as ICanvasAction;
     item.Actions[CanvasActions.Rotate].Value = this.angle;
@@ -152,7 +187,7 @@ export class CanvasComponent implements OnInit, AfterViewInit {
   }
 
   toViewModel(item: ICanvasItem): ICanvasItemViewModel {
-    var actionsViewModel: ICanvasAction[] = [];
+    let actionsViewModel: ICanvasAction[] = [];
     item.Actions.forEach(x => {
       actionsViewModel.push({
         Value: x.Value.length > 25 ? x.Value.substring(0, 25) : x.Value,
@@ -162,7 +197,7 @@ export class CanvasComponent implements OnInit, AfterViewInit {
         IsRendered: x.IsRendered
       } as ICanvasAction)
     })
-    var model = {
+    let model = {
       Type: CanvasActions[item.Type],
       IsHigher: item?.IsHigher,
       IsWider: item?.IsWider,
@@ -190,7 +225,7 @@ export class CanvasComponent implements OnInit, AfterViewInit {
     this.canvasService.setCanvasDisplayContext(this.context);
     this.canvasService.setCanvasActionContext(this.contextAction);
 
-    var loading = {
+    let loading = {
       LayerIndex: -1,
       Type: CanvasActions.DrawText,
       Context: Context.Display,
@@ -204,7 +239,7 @@ export class CanvasComponent implements OnInit, AfterViewInit {
     this.canvasService.pushItem(loading);
     this.canvasService.renderItem(loading);
 
-    var phone = {
+    let phone = {
       Url: 'assets/phone.png',
       LayerIndex: 2,
       Context: Context.Display,
@@ -215,7 +250,7 @@ export class CanvasComponent implements OnInit, AfterViewInit {
       IsPainted: false
     } as ICanvasAction
 
-    var mask = {
+    let mask = {
       Url: "assets/phonet.png",
       LayerIndex: 998,
       Context: Context.Display,
@@ -226,7 +261,7 @@ export class CanvasComponent implements OnInit, AfterViewInit {
       IsPainted: false
     } as ICanvasAction
 
-    var draw = {
+    let draw = {
       Url: "assets/draw.jpg",
       LayerIndex: 3,
       Context: Context.Display,
@@ -237,7 +272,7 @@ export class CanvasComponent implements OnInit, AfterViewInit {
       IsPainted: false
     } as ICanvasAction
 
-    var text = {
+    let text = {
       LayerIndex: 4,
       Context: Context.Display,
       IsVisible: true
@@ -254,7 +289,7 @@ export class CanvasComponent implements OnInit, AfterViewInit {
     this.canvasService.pushItem(text)
 
 
-    var imagesTasks = [
+    let imagesTasks = [
       this.canvasService.getImageFromUrl(phone),
       this.canvasService.getImageFromUrl(mask),
       this.canvasService.getImageFromUrl(draw)

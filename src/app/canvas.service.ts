@@ -93,7 +93,7 @@ export interface ICanvasItemViewModel {
 class Guid {
   static newGuid() {
     return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
-      var r = Math.random() * 16 | 0,
+      let r = Math.random() * 16 | 0,
         v = c == 'x' ? r : (r & 0x3 | 0x8);
       return v.toString(16);
     });
@@ -133,7 +133,7 @@ export class CanvasService {
   align(item: ICanvasItem, align: CanvasItemAlign) {
 
     this.saveAction(item, CanvasActions.Align);
-    var action = item.Actions[CanvasActions.Align];
+    let action = item.Actions[CanvasActions.Align];
     action.IsRendered = true;
     action.IsPainted = false;
     action.Value = CanvasItemAlign[align];
@@ -179,7 +179,7 @@ export class CanvasService {
   move(item: ICanvasItem, direction: CanvasItemDirection) {
 
     this.saveAction(item, CanvasActions.Move);
-    var action = item.Actions[CanvasActions.Move];
+    let action = item.Actions[CanvasActions.Move];
     action.IsRendered = true;
     action.IsPainted = false;
     action.Value = CanvasItemDirection[direction];
@@ -224,26 +224,26 @@ export class CanvasService {
   }
 
   rotateItem(item: ICanvasItem) {
-    var action = CanvasActions.Rotate;
+    let action = CanvasActions.Rotate;
     item.Actions[action].IsPainted = false;
     if (item?.Actions[action].Value == 0 || item?.Actions[action].Value == 360) {
       item.Actions[action].Value = 360;
     }
     this.canvasContext.save();
     if (item.Type != CanvasActions.DrawText) this.centerItem(item);
-    var w = item.Width;
-    var h = item.Height;
-    var oDx = item.Dx + w / 2;
-    var oDy = item.Dy + h / 2;
-    var noDx = -item.Dx - w / 2;
-    var noDy = -item.Dy - h / 2;
+    let w = item.Width;
+    let h = item.Height;
+    let oDx = item.Dx + w / 2;
+    let oDy = item.Dy + h / 2;
+    let noDx = -item.Dx - w / 2;
+    let noDy = -item.Dy - h / 2;
     if (item.Type == CanvasActions.DrawText) {
       oDx = item.Dx;
       oDy = item.Dy;
       noDx = -item.Dx;
       noDy = -item.Dy;
     }
-    var rad = item.Actions[action].Value * (Math.PI / 180);
+    let rad = item.Actions[action].Value * (Math.PI / 180);
     this.canvasContext.translate(oDx, oDy);
     this.canvasContext.rotate(rad)
     this.canvasContext.translate(noDx, noDy);
@@ -257,17 +257,17 @@ export class CanvasService {
   }
 
   resize(item: ICanvasItem) {
-    var action = CanvasActions.Resize;
-    var resizeValue = item.Actions[action].Value;
-    var currentValue = item.Actions[action]?.CurrentValue;
+    let action = CanvasActions.Resize;
+    let resizeValue = item.Actions[action].Value;
+    let currentValue = item.Actions[action]?.CurrentValue;
     // this.clearContext();
     if (currentValue === undefined) {
       item.OriginallWidth = item.Width;
       item.OriginalHeight = item.Height;
     }
     if (item.Actions[CanvasActions.DrawImage]) {
-      var w = item.Width;
-      var h = item.Height;
+      let w = item.Width;
+      let h = item.Height;
       console.log(w, h)
       if (resizeValue == 0) {
         w = item.OriginallWidth;
@@ -285,14 +285,14 @@ export class CanvasService {
       this.saveAction(item, action);
     } else if (item.Actions[CanvasActions.DrawText]) {
       item.FontOptions = item.FontOptions ?? { font: '0px Arial', textBaseline: 'middle', textAlign: 'center' } as CanvasTextDrawingStyles;
-      var fontSize: number = +item.FontOptions.font.split(' ')[0].split('px')[0];
-      var diffVal: number = resizeValue;
+      let fontSize: number = +item.FontOptions.font.split(' ')[0].split('px')[0];
+      let diffVal: number = resizeValue;
       if (resizeValue == 0) {
         fontSize = item.OriginalHeight;
       } else {
         fontSize = resizeValue;
       }
-      var fonstStyle: string = item.FontOptions.font.split(' ')[1];
+      let fonstStyle: string = item.FontOptions.font.split(' ')[1];
       item.FontOptions.font = fontSize + "px " + fonstStyle;
       console.log(fontSize)
       this.saveAction(item, action);
@@ -380,11 +380,11 @@ export class CanvasService {
   }
 
   private centerItem(item: ICanvasItem) {
-    var canvas = this.canvasContext.canvas;
+    let canvas = this.canvasContext.canvas;
     item.IsWider = canvas.width < item.Width;
     item.IsHigher = canvas.height < item.Height;
-    var dxCenter = (canvas.width / 2) - (item.Width / 2);
-    var dyCenter = (canvas.height / 2) - (item.Height / 2);
+    let dxCenter = (canvas.width / 2) - (item.Width / 2);
+    let dyCenter = (canvas.height / 2) - (item.Height / 2);
     if (item.Dx != dxCenter) {
       //Center Item
       item.Dx = dxCenter;
@@ -418,8 +418,8 @@ export class CanvasService {
   }
 
   download(fileName: string = "my-image.png") {
-    var image = this.canvasContext.canvas.toDataURL("image/png", 1.0).replace("image/png", "image/octet-stream");
-    var link = document.createElement('a');
+    let image = this.canvasContext.canvas.toDataURL("image/png", 1.0).replace("image/png", "image/octet-stream");
+    let link = document.createElement('a');
     link.download = fileName;
     link.href = image;
     link.click();
@@ -451,7 +451,7 @@ export class CanvasService {
     this.canvasContext.textAlign = item.FontOptions.textAlign;
     item.Height = +item.FontOptions.font.split('px')[0];
     item.Width = this.canvasContext.measureText(item.Actions[CanvasActions.DrawText].Value).width
-    var txt = item.Actions[CanvasActions.DrawText].Value;
+    let txt = item.Actions[CanvasActions.DrawText].Value;
     this.canvasContext.fillText(txt, item.Dx, item.Dy);
     item.Type = CanvasActions.DrawText;
     this.saveAction(item, CanvasActions.DrawText);
@@ -473,7 +473,7 @@ export class CanvasService {
       this.renderItems(this.items)
     }
 
-    var select = {
+    let select = {
       LayerIndex: 9999,
       Width: item.Width,
       Height: item.Height,
@@ -499,25 +499,25 @@ export class CanvasService {
     this.canvasContext.setTransform(item.RotateTransformMatrix);
     this.canvasContext.strokeStyle = "#0d6efd";
     this.canvasContext.lineWidth = 10;
-    var dx = item.Dx;
-    var dy = item.Dy;
+    let dx = item.Dx;
+    let dy = item.Dy;
     if (item.Type == CanvasActions.DrawText) {
       dx -= item.Width / 2
       dy -= item.Height / 2
     }
-    var w = item.Width;
-    var h = item.Height;
-    var circleSize = 15;
+    let w = item.Width;
+    let h = item.Height;
+    let circleSize = 15;
     this.canvasContext.strokeRect(dx, dy, w, h);
     this.canvasContext.beginPath();
     this.canvasContext.fillStyle = "#0d6efd";
-    var topLeftDx = dx;
-    var topRightDx = dx + w;
-    var centerDx = w / 2;
-    var itemCenterDx = centerDx + dx
-    var centerDy = h / 2;
-    var itemCenterDy = centerDy + dy
-    var bottomDy = h + dy;
+    let topLeftDx = dx;
+    let topRightDx = dx + w;
+    let centerDx = w / 2;
+    let itemCenterDx = centerDx + dx
+    let centerDy = h / 2;
+    let itemCenterDy = centerDy + dy
+    let bottomDy = h + dy;
 
     this.canvasContext.arc(topLeftDx, dy, circleSize, 0, 2 * Math.PI);
     this.canvasContext.moveTo(itemCenterDx, dy)
@@ -555,7 +555,7 @@ export class CanvasService {
   }
 
   renderItems(items: ICanvasItem[]) {
-    var filter = items.filter(x => x.LayerIndex >= 0).sort((x, y) => x.LayerIndex - y.LayerIndex)
+    let filter = items.filter(x => x.LayerIndex >= 0).sort((x, y) => x.LayerIndex - y.LayerIndex)
     this.items = filter;
     this.clearContext();
     filter.forEach(x => {
@@ -565,7 +565,7 @@ export class CanvasService {
   }
 
   validateAction(item: ICanvasItem, action: CanvasActions): boolean {
-    var textAction = CanvasActions[action]
+    let textAction = CanvasActions[action]
     if (item.Actions[action]) {
       console.log(textAction);
       if (item.Actions[action].IsPainted === undefined) {
@@ -596,21 +596,21 @@ export class CanvasService {
       this.drawText(item);
       return;
     }
-    var ctx = this.canvasContext;
-    var canvas = ctx.canvas;
-    var img = item.Image;
-    var w = img.width, h = img.height;
+    let ctx = this.canvasContext;
+    let canvas = ctx.canvas;
+    let img = item.Image;
+    let w = img.width, h = img.height;
 
     canvas.width = w;
     canvas.height = h;
 
 
     ctx.drawImage(img, 0, 0, w, h);
-    var imageData = ctx.getImageData(0, 0, w, h);
-    var pixel = imageData.data;
+    let imageData = ctx.getImageData(0, 0, w, h);
+    let pixel = imageData.data;
 
-    var red = 0, green = 1, blue = 2, alpha = 3;
-    for (var p = 0; p <= pixel.length; p += 4) {
+    let red = 0, green = 1, blue = 2, alpha = 3;
+    for (let p = 0; p <= pixel.length; p += 4) {
       if (pixel[p + red] >= 255
         && pixel[p + green] >= 255
         && pixel[p + blue] >= 255) // if white then change alpha to 0
