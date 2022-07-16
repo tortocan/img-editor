@@ -5,7 +5,6 @@ import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { HttpClientModule } from '@angular/common/http';
 import { CanvasComponent } from './canvas/canvas.component';
-import { RulerModule } from '@ngx-canvas/ruler';
 
 @NgModule({
   declarations: [
@@ -15,8 +14,7 @@ import { RulerModule } from '@ngx-canvas/ruler';
   imports: [
     BrowserModule,
     AppRoutingModule,
-    HttpClientModule,
-    RulerModule
+    HttpClientModule
   ],
   providers: [],
   bootstrap: [AppComponent]
