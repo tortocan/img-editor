@@ -1,0 +1,154 @@
+<div class="container-fluid">
+    <div class="row align-items-center justify-content-center  m-3">
+        <div class="col-6 d-flex align-items-center justify-content-center">
+            <canvas class="canvas-display" #canvas width="{{canvasWidth}}" height="{{canvasHeight}}">
+            </canvas>
+        </div>
+        <div class="col-6 d-flex align-items-center justify-content-center">
+            <canvas class="canvas-action" #canvasAction width="{{canvasWidth}}" height="{{canvasHeight}}">
+            </canvas>
+        </div>
+    </div>
+    <div class="row align-items-center">
+        <div class="col-6 d-flex align-items-center justify-content-center">
+
+
+            <div class="btn-groups">
+                <span class="badge bg-primary">Align</span>
+                <div class="btn-group" role="group">
+                    <button type="button" (click)="align(alignment.UpLeft)" class="btn btn-outline-primary btn-lg">
+                        <i class="bi-arrow-up-left"></i>
+                    </button>
+                    <button type="button" (click)="align(alignment.Up)" class="btn btn-outline-primary btn-lg">
+                        <i class="bi-arrow-up"></i>
+                    </button>
+                    <button type="button" (click)="align(alignment.UpRight)" class="btn btn-outline-primary btn-lg">
+                        <i class="bi-arrow-up-right"></i>
+                    </button>
+                </div>
+                <div class="btn-group" role="group">
+                    <button type="button" (click)="align(alignment.Left)" class="btn btn-outline-primary btn-lg">
+                        <i class="bi-arrow-left"></i>
+                    </button>
+                    <button type="button" (click)="align(alignment.Center)" class="btn btn-outline-primary btn-lg">
+                        <i class="bi-arrows-move"></i>
+                    </button>
+                    <button type="button" (click)="align(alignment.Right)" class="btn btn-outline-primary btn-lg">
+                        <i class="bi-arrow-right"></i>
+                    </button>
+                </div>
+                <div class="btn-group" role="group">
+                    <button type="button" (click)="align(alignment.DowLeft)" class="btn btn-outline-primary btn-lg">
+                        <i class="bi-arrow-down-left"></i>
+                    </button>
+                    <button type="button" (click)="align(alignment.Down)" class="btn btn-outline-primary btn-lg">
+                        <i class="bi-arrow-down"></i>
+                    </button>
+                    <button type="button" (click)="align(alignment.DownRight)" class="btn btn-outline-primary btn-lg">
+                        <i class="bi-arrow-down-right"></i>
+                    </button>
+                </div>
+            </div>
+
+
+            <div class="btn-groups">
+                <span class="badge bg-primary">Move</span>
+                <div class="btn-group" role="group">
+                    <button type="button" (click)="move(direction.UpLeft)" class="btn btn-outline-primary btn-lg">
+                        <i class="bi-arrow-up-left"></i>
+                    </button>
+                    <button type="button" (click)="move(direction.Up)" class="btn btn-outline-primary btn-lg">
+                        <i class="bi-arrow-up"></i>
+                    </button>
+                    <button type="button" (click)="move(direction.UpRight)" class="btn btn-outline-primary btn-lg">
+                        <i class="bi-arrow-up-right"></i>
+                    </button>
+                </div>
+                <div class="btn-group" role="group">
+                    <button type="button" (click)="move(direction.Left)" class="btn btn-outline-primary btn-lg">
+                        <i class="bi-arrow-left"></i>
+                    </button>
+                    <button type="button" class="btn btn-outline-primary btn-lg" disabled="">
+                        <i class="bi-arrows-move"></i>
+                    </button>
+                    <button type="button" (click)="move(direction.Right)" class="btn btn-outline-primary btn-lg">
+                        <i class="bi-arrow-right"></i>
+                    </button>
+                </div>
+                <div class="btn-group" role="group">
+                    <button type="button" (click)="move(direction.DowLeft)" class="btn btn-outline-primary btn-lg">
+                        <i class="bi-arrow-down-left"></i>
+                    </button>
+                    <button type="button" (click)="move(direction.Down)" class="btn btn-outline-primary btn-lg">
+                        <i class="bi-arrow-down"></i>
+                    </button>
+                    <button type="button" (click)="move(direction.DownRight)" class="btn btn-outline-primary btn-lg">
+                        <i class="bi-arrow-down-right"></i>
+                    </button>
+                </div>
+            </div>
+
+
+
+
+            <div class="input-group mb-3 w-50">
+
+                <label for="rotate-range" class="form-label">
+                    <span class="badge rounded-pill bg-primary p-1 me-1">Rotate</span>
+
+                    <span class="badge rounded-pill bg-primary p-1">{{angle}} </span>
+                </label>
+                <input class="form-range" id="rotate-range" type="range" name="range" step="{{rotateStep}}" min="0"
+                    max="360" value="{{angle}}" (change)="rotate($event)">
+
+                <label for="resize-range" class="form-label">
+                    <span class="badge rounded-pill bg-primary p-1 me-1">Resize </span>
+
+                    <span class="badge rounded-pill bg-primary p-1">{{resizePercentage}} </span>
+                </label>
+                <input class="form-range" id="resize-range" type="range" name="range" step="10" min="0" max="400"
+                    value="{{resizePercentage}}" (change)="resize($event)">
+
+                <label for="zoom-range" class="form-label">
+                    <span class="badge rounded-pill bg-primary p-1 me-1">Zoom </span>
+
+                    <span class="badge rounded-pill bg-primary p-1">{{zoomPercentage}} </span>
+                </label>
+                <input class="form-range" id="zoom-range" type="range" name="range" step="10" min="0" max="400"
+                    value="{{zoomPercentage}}" (change)="zoom($event)">
+            </div>
+
+
+        </div>
+        <div class="col  d-flex align-items-center justify-content-center">
+
+            <div class="btn-groups">
+                <div class="btn-group" role="group">
+                    <button class="btn btn-outline-primary" type="button" (click)="visibility()">
+                        <i [ngClass]="{'bi bi-eye-fill': selectedItem.IsVisible,'bi bi-eye-slash': !selectedItem.IsVisible}"></i>
+                    </button>
+                    <button class="btn btn-outline-primary" (click)="download()">Download Image</button>
+                    <button class="btn btn-outline-primary" (click)="render()">Render</button>
+                    <button class="btn btn-outline-primary" (click)="save()">Save</button>
+
+                    <button class="btn btn-outline-primary" (click)="restore()">Restore</button>
+                    <button class="btn btn-outline-primary" (click)="deleteItem()">Delete</button>
+                    <button class="btn btn-outline-primary" (click)="clear()">Clear</button>
+                    <button class="btn btn-outline-primary" (click)="loadItem()">Load</button>
+                </div>
+            </div>
+        </div>
+
+    </div>
+    <div class="row">
+        <div class="col">
+            <div class="wrapper">
+                <div class="alert " role="alert" *ngFor="let item of items, index as i " (click)="selectItem(item)"
+                    [ngClass]="{'alert-info': i % 2 == 0,'alert-primary': i % 2 == 1,'alert-light': selectedItem.Id === item.Id }">
+                    {{
+                    toViewModel(item) | json}}"
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
