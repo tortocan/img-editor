@@ -1,2 +1,12 @@
 @import "~bootstrap/dist/css/bootstrap.css";
-@import "~bootstrap-icons/font/bootstrap-icons.css";
+@import "~bootstrap-icons/font/bootstrap-icons.scss";
+
+.bi-plus-circle:hover {
+    @extend .bi-plus-circle-fill;
+    cursor: pointer;
+}
+
+.bi-dash-circle:hover {
+    @extend .bi-dash-circle-fill;
+    cursor: pointer;
+}

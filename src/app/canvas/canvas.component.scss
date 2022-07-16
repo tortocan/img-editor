@@ -1,4 +1,3 @@
-@import "~bootstrap-icons/font/bootstrap-icons.scss";
 * {
     padding: 0;
     margin: 0;
@@ -55,12 +54,3 @@ canvas {
     border-top-right-radius: 0;
 }
 
-.bi-plus-circle:hover {
-    @extend .bi-plus-circle-fill;
-    cursor: pointer;
-}
-
-.bi-dash-circle:hover {
-    @extend .bi-dash-circle-fill;
-    cursor: pointer;
-}
