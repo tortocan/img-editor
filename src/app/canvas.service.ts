@@ -119,7 +119,6 @@ export class CanvasService {
     });
   }
 
-
   public items: ICanvasItem[] = [];
   private canvasContext: CanvasRenderingContext2D = {} as CanvasRenderingContext2D;
   private canvasActionContext: CanvasRenderingContext2D = {} as CanvasRenderingContext2D;
@@ -131,7 +130,6 @@ export class CanvasService {
   }
 
   align(item: ICanvasItem, align: CanvasItemAlign) {
-
     this.saveAction(item, CanvasActions.Align);
     let action = item.Actions[CanvasActions.Align];
     action.IsRendered = true;
@@ -177,7 +175,6 @@ export class CanvasService {
   }
 
   move(item: ICanvasItem, direction: CanvasItemDirection) {
-
     this.saveAction(item, CanvasActions.Move);
     let action = item.Actions[CanvasActions.Move];
     action.IsRendered = true;
@@ -343,6 +340,7 @@ export class CanvasService {
         break
     }
   }
+
   private removeAction(item: ICanvasItem, action: CanvasActions) {
     if (item.Actions[action]) {
       this.undoAction(item, action);
@@ -404,9 +402,7 @@ export class CanvasService {
       item.OriginallWidth = item.Image.width;
       item.OriginalHeight = item.Image.height;
     }
-
-    this.centerItem(item)
-    this.canvasContext.drawImage(item.Image, item.Dx, item.Dy, item.Width, item.Height);
+    this.canvasContext.drawImage(item.Image, item.Dx ?? 0, item.Dy ?? 0, item.Width, item.Height);
     item.GlobalCompositeOperation = this.canvasContext.globalCompositeOperation;
     item.Type = CanvasActions.DrawImage;
     this.saveAction(item, CanvasActions.DrawImage);
@@ -581,9 +577,6 @@ export class CanvasService {
       case Context.Display:
         this.canvasContext = this.canvasDisplayContext;
         break
-      // default:
-      //   this.canvasContext = this.canvasActionContext;
-      //   break
     }
   }
 
@@ -596,15 +589,11 @@ export class CanvasService {
     let canvas = ctx.canvas;
     let img = item.Image;
     let w = img.width, h = img.height;
-
     canvas.width = w;
     canvas.height = h;
-
-
     ctx.drawImage(img, 0, 0, w, h);
     let imageData = ctx.getImageData(0, 0, w, h);
     let pixel = imageData.data;
-
     let red = 0, green = 1, blue = 2, alpha = 3;
     for (let p = 0; p <= pixel.length; p += 4) {
       if (pixel[p + red] >= 255
@@ -614,7 +603,6 @@ export class CanvasService {
         pixel[p + alpha] = 0;
       }
     }
-
     ctx.putImageData(imageData, 0, 0);
   }
 
@@ -623,7 +611,7 @@ export class CanvasService {
     console.log(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
 
     if (this.validateAction(item, CanvasActions.Align)) {
-      // this.align(item, item.Actions[CanvasActions.Align].Value as CanvasItemAlign);
+      this.align(item, item.Actions[CanvasActions.Align].Value as CanvasItemAlign);
       item.Actions[CanvasActions.Align].IsRendered = true;
     }
 
