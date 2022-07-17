@@ -90,55 +90,9 @@
 
 
             <div class="input-group mb-3 w-50">
-                <div class="d-flex align-items-center">
-                    <span class="bi bi-dash-circle text-primary flex-shrink-0 align-self-end mx-1"
-                        (click)="decreaseRotate($event)"></span>
-                    <div class="input-group flex-shrink-1">
-                        <label for="rotate-range" class="form-label">
-                            <span class="badge rounded-pill bg-primary p-1 mx-1">Rotate</span>
-
-                            <span class="badge rounded-pill bg-primary p-1">{{angle}} </span>
-                        </label>
-                        <input class="form-range" id="rotate-range" type="range" name="range" step="{{rotateStep}}"
-                            min="0" max="360" value="{{angle}}" (change)="rotate($event)">
-
-                    </div>
-                    <span class="bi bi-plus-circle text-primary mx-1 flex-shrink-0 align-self-end"
-                        (click)="increaseRotate($event)"></span>
-                </div>
-
-                <div class="d-flex align-items-center">
-                    <span class="bi bi-dash-circle text-primary flex-shrink-0 align-self-end mx-1"
-                        (click)="decreaseResize($event)"></span>
-                    <div class="input-group flex-shrink-1">
-                        <label for="resize-range" class="form-label">
-                            <span class="badge rounded-pill bg-primary p-1 mx-1">Resize </span>
-
-                            <span class="badge rounded-pill bg-primary p-1">{{resizePercentage}} </span>
-                        </label>
-                        <input class="form-range" id="resize-range" type="range" name="range" step="{{rotateStep}}"
-                            min="0" max="400" value="{{resizePercentage}}" (change)="resize($event)">
-                    </div>
-                    <span class="bi bi-plus-circle text-primary mx-1 flex-shrink-0 align-self-end"
-                        (click)="increaseResize($event)"></span>
-                </div>
-
-
-                <div class="d-flex align-items-center">
-                    <span class="bi bi-dash-circle text-primary flex-shrink-0 align-self-end mx-1"></span>
-                    <div class="input-group flex-shrink-1">
-                        <label for="zoom-range" class="form-label">
-                            <span class="badge rounded-pill bg-primary p-1 mx-1">Zoom </span>
-
-                            <span class="badge rounded-pill bg-primary p-1">{{zoomPercentage}} </span>
-                        </label>
-                        <input class="form-range" id="zoom-range" type="range" name="range" step="10" min="0" max="400"
-                            value="{{zoomPercentage}}" (change)="zoom($event)">
-                    </div>
-                    <span class="bi bi-plus-circle text-primary mx-1 flex-shrink-0 align-self-end"></span>
-                </div>
-
-
+                <app-range [title]="'Rotate'" [value]="angle" [step]="rotateStep" (onChange)="rotate($event)" ></app-range>
+                <app-range [title]="'Resize'" [value]="resizePercentage" [step]="rotateStep" (onChange)="resize($event)" ></app-range>
+                <app-range [title]="'Zoom'" [value]="zoomPercentage" (onChange)="zoom($event)" ></app-range>
             </div>
 
 

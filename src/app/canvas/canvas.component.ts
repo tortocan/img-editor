@@ -121,29 +121,6 @@ export class CanvasComponent implements AfterViewInit {
     this.canvasService.renderItems(this.items);
   }
 
-  private plusOrMinusAction($element: any, action: CanvasActions, step: number = 5, isNegative: boolean = false) {
-    $element.stopPropagation();
-    let value = this.selectedItem?.Actions[action]?.Value ?? 0;
-    if (isNegative) {
-      value -= step;
-    } else {
-      value += step;
-    }
-    $element.target.value = value;
-    $element.target.valueAsNumber = +value;
-  }
-
-  increaseResize($element: any) {
-    this.plusOrMinusAction($element, CanvasActions.Resize, this.resizeStep);
-    this.resize($element);
-
-  }
-
-  decreaseResize($element: any) {
-    this.plusOrMinusAction($element, CanvasActions.Resize, this.resizeStep, true);
-    this.resize($element);
-  }
-
   resize($element: any) {
     $element.stopPropagation();
     let item = this.selectedItem;
@@ -155,17 +132,6 @@ export class CanvasComponent implements AfterViewInit {
     this.canvasService.resize(item);
     this.items = this.canvasService.items
     this.render();
-  }
-
-  increaseRotate($element: any) {
-    this.plusOrMinusAction($element, CanvasActions.Rotate, this.rotateStep);
-    this.rotate($element);
-
-  }
-
-  decreaseRotate($element: any) {
-    this.plusOrMinusAction($element, CanvasActions.Rotate, this.rotateStep,true);
-    this.rotate($element);
   }
 
   rotate($element: any) {

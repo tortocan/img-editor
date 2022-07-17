@@ -1,0 +1,16 @@
+<div class="d-flex align-items-center">
+    <span class="bi bi-dash-circle text-primary flex-shrink-0 align-self-end mx-1"
+        (click)="decreaseRange($event)"></span>
+    <div class="input-group flex-shrink-1">
+        <label for="rotate-range" class="form-label">
+            <span class="badge rounded-pill bg-primary p-1 mx-1">{{title}}</span>
+
+            <span class="badge rounded-pill bg-primary p-1">{{value}} </span>
+        </label>
+        <input class="form-range" id="rotate-range" type="range" name="range" step="{{step}}"
+            min="0" max="360" value="{{value}}" (change)="change($event)">
+
+    </div>
+    <span class="bi bi-plus-circle text-primary mx-1 flex-shrink-0 align-self-end"
+        (click)="increaseRange($event)"></span>
+</div>
