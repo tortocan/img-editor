@@ -17,35 +17,35 @@
                 <span class="badge bg-primary">Align</span>
                 <div class="btn-group" role="group">
                     <button type="button" (click)="align(alignment.UpLeft)" class="btn btn-outline-primary btn-lg">
-                        <i class="bi-arrow-up-left"></i>
+                        <span class="bi-arrow-up-left"></span>
                     </button>
                     <button type="button" (click)="align(alignment.Up)" class="btn btn-outline-primary btn-lg">
-                        <i class="bi-arrow-up"></i>
+                        <span class="bi-arrow-up"></span>
                     </button>
                     <button type="button" (click)="align(alignment.UpRight)" class="btn btn-outline-primary btn-lg">
-                        <i class="bi-arrow-up-right"></i>
+                        <span class="bi-arrow-up-right"></span>
                     </button>
                 </div>
                 <div class="btn-group" role="group">
                     <button type="button" (click)="align(alignment.Left)" class="btn btn-outline-primary btn-lg">
-                        <i class="bi-arrow-left"></i>
+                        <span class="bi-arrow-left"></span>
                     </button>
                     <button type="button" (click)="align(alignment.Center)" class="btn btn-outline-primary btn-lg">
-                        <i class="bi-arrows-move"></i>
+                        <span class="bi-arrows-move"></span>
                     </button>
                     <button type="button" (click)="align(alignment.Right)" class="btn btn-outline-primary btn-lg">
-                        <i class="bi-arrow-right"></i>
+                        <span class="bi-arrow-right"></span>
                     </button>
                 </div>
                 <div class="btn-group" role="group">
                     <button type="button" (click)="align(alignment.DowLeft)" class="btn btn-outline-primary btn-lg">
-                        <i class="bi-arrow-down-left"></i>
+                        <span class="bi-arrow-down-left"></span>
                     </button>
                     <button type="button" (click)="align(alignment.Down)" class="btn btn-outline-primary btn-lg">
-                        <i class="bi-arrow-down"></i>
+                        <span class="bi-arrow-down"></span>
                     </button>
                     <button type="button" (click)="align(alignment.DownRight)" class="btn btn-outline-primary btn-lg">
-                        <i class="bi-arrow-down-right"></i>
+                        <span class="bi-arrow-down-right"></span>
                     </button>
                 </div>
             </div>
@@ -55,35 +55,35 @@
                 <span class="badge bg-primary">Move</span>
                 <div class="btn-group" role="group">
                     <button type="button" (click)="move(direction.UpLeft)" class="btn btn-outline-primary btn-lg">
-                        <i class="bi-arrow-up-left"></i>
+                        <span class="bi-arrow-up-left"></span>
                     </button>
                     <button type="button" (click)="move(direction.Up)" class="btn btn-outline-primary btn-lg">
-                        <i class="bi-arrow-up"></i>
+                        <span class="bi-arrow-up"></span>
                     </button>
                     <button type="button" (click)="move(direction.UpRight)" class="btn btn-outline-primary btn-lg">
-                        <i class="bi-arrow-up-right"></i>
+                        <span class="bi-arrow-up-right"></span>
                     </button>
                 </div>
                 <div class="btn-group" role="group">
                     <button type="button" (click)="move(direction.Left)" class="btn btn-outline-primary btn-lg">
-                        <i class="bi-arrow-left"></i>
+                        <span class="bi-arrow-left"></span>
                     </button>
                     <button type="button" class="btn btn-outline-primary btn-lg" disabled="">
-                        <i class="bi-arrows-move"></i>
+                        <span class="bi-arrows-move"></span>
                     </button>
                     <button type="button" (click)="move(direction.Right)" class="btn btn-outline-primary btn-lg">
-                        <i class="bi-arrow-right"></i>
+                        <span class="bi-arrow-right"></span>
                     </button>
                 </div>
                 <div class="btn-group" role="group">
                     <button type="button" (click)="move(direction.DowLeft)" class="btn btn-outline-primary btn-lg">
-                        <i class="bi-arrow-down-left"></i>
+                        <span class="bi-arrow-down-left"></span>
                     </button>
                     <button type="button" (click)="move(direction.Down)" class="btn btn-outline-primary btn-lg">
-                        <i class="bi-arrow-down"></i>
+                        <span class="bi-arrow-down"></span>
                     </button>
                     <button type="button" (click)="move(direction.DownRight)" class="btn btn-outline-primary btn-lg">
-                        <i class="bi-arrow-down-right"></i>
+                        <span class="bi-arrow-down-right"></span>
                     </button>
                 </div>
             </div>
@@ -148,8 +148,8 @@
             <div class="btn-groups">
                 <div class="btn-group" role="group">
                     <button class="btn btn-outline-primary" type="button" (click)="visibility()">
-                        <i
-                            [ngClass]="{'bi bi-eye-fill': selectedItem.IsVisible,'bi bi-eye-slash': !selectedItem.IsVisible}"></i>
+                        <span
+                            [ngClass]="{'bi bi-eye-fill': selectedItem.IsVisible,'bi bi-eye-slash': !selectedItem.IsVisible}"></span>
                     </button>
                     <button class="btn btn-outline-primary" (click)="download()">Download Image</button>
                     <button class="btn btn-outline-primary" (click)="render()">Render</button>

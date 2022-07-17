@@ -138,7 +138,7 @@ export class CanvasService {
     action.IsPainted = false;
     action.Value = CanvasItemAlign[align];
     console.log(item.Dx, item.Dy)
-    switch (align as CanvasItemAlign) {
+    switch (align) {
       case CanvasItemAlign.Up:
         item.Dy = item.Height / 2;
         break;
@@ -184,22 +184,12 @@ export class CanvasService {
     action.IsPainted = false;
     action.Value = CanvasItemDirection[direction];
     console.log(item.Dx, item.Dy)
-    switch (direction as CanvasItemDirection) {
+    switch (direction) {
       case CanvasItemDirection.Up:
         item.Dy--;
         break;
-      case CanvasItemDirection.Down:
-        item.Dy++;
-        break;
-      case CanvasItemDirection.Right:
-        item.Dx++;
-        break;
       case CanvasItemDirection.UpRight:
         item.Dy--;
-        item.Dx++;
-        break;
-      case CanvasItemDirection.DownRight:
-        item.Dy++;
         item.Dx++;
         break;
       case CanvasItemDirection.Left:
@@ -209,8 +199,18 @@ export class CanvasService {
         item.Dy--;
         item.Dx--;
         break;
+      case CanvasItemDirection.Down:
+        item.Dy++;
+        break;
       case CanvasItemDirection.DowLeft:
-        item.Dy--;
+        item.Dy++;
+        item.Dx--;
+        break;
+      case CanvasItemDirection.DownRight:
+        item.Dy++;
+        item.Dx++;
+        break;
+      case CanvasItemDirection.Right:
         item.Dx++;
         break;
     }
@@ -260,7 +260,6 @@ export class CanvasService {
     let action = CanvasActions.Resize;
     let resizeValue = item.Actions[action].Value;
     let currentValue = item.Actions[action]?.CurrentValue;
-    // this.clearContext();
     if (currentValue === undefined) {
       item.OriginallWidth = item.Width;
       item.OriginalHeight = item.Height;
@@ -286,7 +285,6 @@ export class CanvasService {
     } else if (item.Actions[CanvasActions.DrawText]) {
       item.FontOptions = item.FontOptions ?? { font: '0px Arial', textBaseline: 'middle', textAlign: 'center' } as CanvasTextDrawingStyles;
       let fontSize: number = +item.FontOptions.font.split(' ')[0].split('px')[0];
-      let diffVal: number = resizeValue;
       if (resizeValue == 0) {
         fontSize = item.OriginalHeight;
       } else {
@@ -298,12 +296,12 @@ export class CanvasService {
       this.saveAction(item, action);
     } else {
 
-      throw ("Unkown item type!")
+      throw (new Error("Unkown item type!"))
     }
   }
 
-  setCanvasDisplayContext(canvasContext: CanvasRenderingContext2D) { this.canvasDisplayContext = canvasContext; this.canvasContext = canvasContext };
-  setCanvasActionContext(canvasActionContext: CanvasRenderingContext2D) { this.canvasActionContext = canvasActionContext };
+  setCanvasDisplayContext(canvasContext: CanvasRenderingContext2D) { this.canvasDisplayContext = canvasContext; this.canvasContext = canvasContext; }
+  setCanvasActionContext(canvasActionContext: CanvasRenderingContext2D) { this.canvasActionContext = canvasActionContext; }
 
   getImageFromUrl(img: ICanvasItem): Promise<ICanvasItem> {
     return new Promise<ICanvasItem>((resolve) => {
@@ -312,7 +310,7 @@ export class CanvasService {
         reader.readAsDataURL(blob);
         reader.onloadend = () => {
           img.Actions[CanvasActions.DrawImage].Value = reader.result?.toString() ?? '';
-          this.loadImage(img).then(x => {
+          this.loadImage(img).then(() => {
             this.pushItem(img);
             resolve(img);
           });
@@ -409,8 +407,6 @@ export class CanvasService {
 
     this.centerItem(item)
     this.canvasContext.drawImage(item.Image, item.Dx, item.Dy, item.Width, item.Height);
-    // this.canvasContext.drawImage(item.Image, 0, 0, item.Width, item.Height,     // source rectangle
-    // 0, 0, this.canvasContext.canvas.width, this.canvasContext.canvas.height); // destination rectangle
     item.GlobalCompositeOperation = this.canvasContext.globalCompositeOperation;
     item.Type = CanvasActions.DrawImage;
     this.saveAction(item, CanvasActions.DrawImage);
@@ -570,7 +566,7 @@ export class CanvasService {
       console.log(textAction);
       if (item.Actions[action].IsPainted === undefined) {
         console.trace()
-        throw ("IsPainted is required");
+        throw (new Error("IsPainted is required"));
       }
       return item.IsVisible;
     }
@@ -592,7 +588,7 @@ export class CanvasService {
   }
 
   white2transparent(item: ICanvasItem) {
-    if(item.Type ==  CanvasActions.DrawText) {
+    if (item.Type == CanvasActions.DrawText) {
       this.drawText(item);
       return;
     }
@@ -620,11 +616,9 @@ export class CanvasService {
     }
 
     ctx.putImageData(imageData, 0, 0);
-
-    // img.src = canvas.toDataURL('image/png');
   }
+
   renderItem(item: ICanvasItem) {
-    // item.Actions = item?.Actions ? item.Actions : [];
     this.switchContext(item.Context);
     console.log(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
 

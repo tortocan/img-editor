@@ -1,5 +1,4 @@
-import { AfterViewInit, Component, ElementRef, OnInit, ViewChild } from '@angular/core';
-import { delay } from 'rxjs';
+import { AfterViewInit, Component, ElementRef, ViewChild } from '@angular/core';
 import { CanvasActions, CanvasItemAlign, CanvasItemDirection, CanvasService, Context, ICanvasAction, ICanvasItem, ICanvasItemViewModel } from '../canvas.service';
 
 @Component({
@@ -7,7 +6,7 @@ import { CanvasActions, CanvasItemAlign, CanvasItemDirection, CanvasService, Con
   templateUrl: './canvas.component.html',
   styleUrls: ['./canvas.component.scss']
 })
-export class CanvasComponent implements OnInit, AfterViewInit {
+export class CanvasComponent implements AfterViewInit {
   @ViewChild('canvas')
   private canvas: ElementRef = {} as ElementRef<HTMLCanvasElement>;
   @ViewChild('canvasAction')
@@ -29,13 +28,10 @@ export class CanvasComponent implements OnInit, AfterViewInit {
 
   selectedItem: ICanvasItem = {} as ICanvasItem;
 
-  ngOnInit(): void {
-
-  }
-
   public get direction(): typeof CanvasItemDirection {
     return CanvasItemDirection;
   }
+
   public get alignment(): typeof CanvasItemAlign {
     return CanvasItemAlign;
   }
@@ -197,7 +193,7 @@ export class CanvasComponent implements OnInit, AfterViewInit {
         IsRendered: x.IsRendered
       } as ICanvasAction)
     })
-    let model = {
+    return {
       Type: CanvasActions[item.Type],
       IsHigher: item?.IsHigher,
       IsWider: item?.IsWider,
@@ -214,7 +210,6 @@ export class CanvasComponent implements OnInit, AfterViewInit {
       Id: item?.Id,
       Actions: actionsViewModel
     } as ICanvasItemViewModel;
-    return model;
   }
 
   ngAfterViewInit(): void {
@@ -295,7 +290,7 @@ export class CanvasComponent implements OnInit, AfterViewInit {
       this.canvasService.getImageFromUrl(draw)
     ]
 
-    Promise.all(imagesTasks).then(x => {
+    Promise.all(imagesTasks).then(() => {
       this.context.canvas.width = phone.Image.width;
       this.context.canvas.height = phone.Image.height;
       this.canvasService.removeItem(loading.Id)
