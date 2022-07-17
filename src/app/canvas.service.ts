@@ -1,6 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
+import { Arrows } from './arrows/arrows.component';
 
 export interface ICanvasItem {
   RotateTransformMatrix: DOMMatrix;
@@ -41,28 +42,6 @@ export enum Context {
   Display
 }
 
-export enum CanvasItemAlign {
-  Up,
-  Down,
-  Left,
-  Right,
-  UpRight,
-  DownRight,
-  DowLeft,
-  UpLeft,
-  Center
-}
-
-export enum CanvasItemDirection {
-  Up,
-  Down,
-  Left,
-  Right,
-  UpRight,
-  DownRight,
-  DowLeft,
-  UpLeft
-}
 
 export interface ICanvasAction {
   IsRendered: boolean;
@@ -129,43 +108,43 @@ export class CanvasService {
     return this.items.sort((a, b) => b.LayerIndex - a.LayerIndex);
   }
 
-  align(item: ICanvasItem, align: CanvasItemAlign) {
+  align(item: ICanvasItem, align: Arrows) {
     this.saveAction(item, CanvasActions.Align);
     let action = item.Actions[CanvasActions.Align];
     action.IsRendered = true;
     action.IsPainted = false;
-    action.Value = CanvasItemAlign[align];
+    action.Value = Arrows[align];
     console.log(item.Dx, item.Dy)
     switch (align) {
-      case CanvasItemAlign.Up:
+      case Arrows.Up:
         item.Dy = item.Height / 2;
         break;
-      case CanvasItemAlign.Down:
+      case Arrows.Down:
         item.Dy = this.canvasContext.canvas.height - (item.Height / 2);
         break;
-      case CanvasItemAlign.Right:
+      case Arrows.Right:
         item.Dx = this.canvasContext.canvas.width - (item.Width / 2);
         break;
-      case CanvasItemAlign.UpRight:
+      case Arrows.UpRight:
         item.Dy = item.Height / 2;
         item.Dx = this.canvasContext.canvas.width - (item.Width / 2);
         break;
-      case CanvasItemAlign.DownRight:
+      case Arrows.DownRight:
         item.Dy = this.canvasContext.canvas.height - (item.Height / 2);
         item.Dx = this.canvasContext.canvas.width - (item.Width / 2);
         break;
-      case CanvasItemAlign.Left:
+      case Arrows.Left:
         item.Dx = item.Width / 2;
         break;
-      case CanvasItemAlign.UpLeft:
+      case Arrows.UpLeft:
         item.Dy = item.Height / 2;
         item.Dx = item.Width / 2;
         break;
-      case CanvasItemAlign.DowLeft:
+      case Arrows.DowLeft:
         item.Dy = this.canvasContext.canvas.height - (item.Height / 2);
         item.Dx = (item.Width / 2);
         break;
-      case CanvasItemAlign.Center:
+      case Arrows.Center:
         item.Dy = this.canvasContext.canvas.height / 2;
         item.Dx = this.canvasContext.canvas.width / 2;
         break;
@@ -174,40 +153,40 @@ export class CanvasService {
     console.log(item.Dx, item.Dy)
   }
 
-  move(item: ICanvasItem, direction: CanvasItemDirection) {
+  move(item: ICanvasItem, direction: Arrows) {
     this.saveAction(item, CanvasActions.Move);
     let action = item.Actions[CanvasActions.Move];
     action.IsRendered = true;
     action.IsPainted = false;
-    action.Value = CanvasItemDirection[direction];
+    action.Value = Arrows[direction];
     console.log(item.Dx, item.Dy)
     switch (direction) {
-      case CanvasItemDirection.Up:
+      case Arrows.Up:
         item.Dy--;
         break;
-      case CanvasItemDirection.UpRight:
+      case Arrows.UpRight:
         item.Dy--;
         item.Dx++;
         break;
-      case CanvasItemDirection.Left:
+      case Arrows.Left:
         item.Dx--;
         break;
-      case CanvasItemDirection.UpLeft:
+      case Arrows.UpLeft:
         item.Dy--;
         item.Dx--;
         break;
-      case CanvasItemDirection.Down:
+      case Arrows.Down:
         item.Dy++;
         break;
-      case CanvasItemDirection.DowLeft:
+      case Arrows.DowLeft:
         item.Dy++;
         item.Dx--;
         break;
-      case CanvasItemDirection.DownRight:
+      case Arrows.DownRight:
         item.Dy++;
         item.Dx++;
         break;
-      case CanvasItemDirection.Right:
+      case Arrows.Right:
         item.Dx++;
         break;
     }
@@ -611,12 +590,12 @@ export class CanvasService {
     console.log(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
 
     if (this.validateAction(item, CanvasActions.Align)) {
-      this.align(item, item.Actions[CanvasActions.Align].Value as CanvasItemAlign);
+      this.align(item, item.Actions[CanvasActions.Align].Value as Arrows);
       item.Actions[CanvasActions.Align].IsRendered = true;
     }
 
     if (this.validateAction(item, CanvasActions.Move)) {
-      this.move(item, item.Actions[CanvasActions.Move].Value as CanvasItemDirection);
+      this.move(item, item.Actions[CanvasActions.Move].Value as Arrows);
       item.Actions[CanvasActions.Move].IsRendered = true;
     }
 

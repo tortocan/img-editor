@@ -1,0 +1,39 @@
+
+* {
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
+}
+
+
+.btn-groups {
+    display: inline-flex;
+    flex-direction: column;
+    width: 94px;
+    margin: 3em;
+}
+.btn-groups > .btn-group:first-child > .btn:first-child {
+    border-bottom-left-radius: 0;
+}
+.btn-groups > .btn-group:first-child > .btn:last-child {
+    border-bottom-right-radius: 0;
+}
+.btn-groups > .btn-group:nth-child(2) {
+    margin-bottom: -1px;
+    margin-top: -1px;
+}
+.btn-groups > .btn-group:nth-child(2) > .btn:first-child {
+    border-bottom-left-radius: 0;
+    border-top-left-radius: 0;
+}
+.btn-groups > .btn-group:nth-child(2) > .btn:last-child {
+    border-bottom-right-radius: 0;
+    border-top-right-radius: 0;
+}
+.btn-groups > .btn-group:last-child > .btn:first-child {
+    border-top-left-radius: 0;
+}
+.btn-groups > .btn-group:last-child > .btn:last-child {
+    border-top-right-radius: 0;
+}
+

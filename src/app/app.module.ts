@@ -6,12 +6,14 @@ import { AppComponent } from './app.component';
 import { HttpClientModule } from '@angular/common/http';
 import { CanvasComponent } from './canvas/canvas.component';
 import { RangeComponent } from './range/range.component';
+import { ArrowsComponent } from './arrows/arrows.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     CanvasComponent,
-    RangeComponent
+    RangeComponent,
+    ArrowsComponent
   ],
   imports: [
     BrowserModule,

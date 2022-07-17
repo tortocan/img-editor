@@ -1,5 +1,6 @@
 import { AfterViewInit, Component, ElementRef, ViewChild } from '@angular/core';
-import { CanvasActions, CanvasItemAlign, CanvasItemDirection, CanvasService, Context, ICanvasAction, ICanvasItem, ICanvasItemViewModel } from '../canvas.service';
+import { Arrows } from '../arrows/arrows.component';
+import { CanvasActions, CanvasService, Context, ICanvasAction, ICanvasItem, ICanvasItemViewModel } from '../canvas.service';
 
 @Component({
   selector: 'app-canvas',
@@ -28,12 +29,12 @@ export class CanvasComponent implements AfterViewInit {
 
   selectedItem: ICanvasItem = {} as ICanvasItem;
 
-  public get direction(): typeof CanvasItemDirection {
-    return CanvasItemDirection;
+  public get direction(): typeof Arrows {
+    return Arrows;
   }
 
-  public get alignment(): typeof CanvasItemAlign {
-    return CanvasItemAlign;
+  public get alignment(): typeof Arrows {
+    return Arrows;
   }
 
   white2transparent() {
@@ -47,14 +48,14 @@ export class CanvasComponent implements AfterViewInit {
     this.render();
   }
 
-  align(align: CanvasItemAlign) {
+  align(align: Arrows) {
     if (this.selectedItem) {
       this.canvasService.align(this.selectedItem, align);
     }
     this.canvasService.renderItems(this.canvasService.items);
   }
 
-  move(direction: CanvasItemDirection) {
+  move(direction: Arrows) {
     if (this.selectedItem) {
       this.canvasService.move(this.selectedItem, direction);
     }
