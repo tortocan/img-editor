@@ -110,35 +110,57 @@ export class CanvasService {
     switch (align) {
       case Arrows.Top:
         item.Dy = item.Height / 2;
+        if(item.Actions[CanvasActions.DrawText]?.Value){
+          item.Dy =  (item.Height / 2) ;
+        }else{
+            item.Dy = 0 ;
+        }
         break;
       case Arrows.Bottom:
-        item.Dy = this.canvasContext.canvas.height - (item.Height / 2);
+        item.Dy = this.canvasContext.canvas.height;
+        if(item.Actions[CanvasActions.DrawText]?.Value){
+          item.Dy -=  (item.Height / 2) ;
+        }else{
+            item.Dy -=  (item.Height) ;
+        }
         break;
       case Arrows.Right:
-        item.Dx = this.canvasContext.canvas.width - (item.Width / 2);
+        item.Dx = this.canvasContext.canvas.width;
+        if(item.Actions[CanvasActions.DrawText]?.Value){
+          item.Dx -=  (item.Width / 2) ;
+        }else {
+          item.Dx -=  (item.Width) ;
+        }
         break;
       case Arrows.TopRight:
-        item.Dy = item.Height / 2;
-        item.Dx = this.canvasContext.canvas.width - (item.Width / 2);
+        this.align(item, Arrows.Right);
+        this.align(item, Arrows.Top);
         break;
       case Arrows.BottomRight:
-        item.Dy = this.canvasContext.canvas.height - (item.Height / 2);
-        item.Dx = this.canvasContext.canvas.width - (item.Width / 2);
+        this.align(item, Arrows.Bottom);
+        this.align(item, Arrows.Right);
         break;
       case Arrows.Left:
         item.Dx = item.Width / 2;
+        if(item.Actions[CanvasActions.DrawImage]?.Value){
+          item.Dx = 0;
+        }
         break;
       case Arrows.TopLeft:
-        item.Dy = item.Height / 2;
-        item.Dx = item.Width / 2;
+        this.align(item,Arrows.Top);
+        this.align(item,Arrows.Left);
         break;
       case Arrows.BottomLeft:
-        item.Dy = this.canvasContext.canvas.height - (item.Height / 2);
-        item.Dx = (item.Width / 2);
+        this.align(item,Arrows.Bottom);
+        this.align(item,Arrows.Left);
         break;
       case Arrows.Center:
         item.Dy = this.canvasContext.canvas.height / 2;
         item.Dx = this.canvasContext.canvas.width / 2;
+        if(item.Actions[CanvasActions.DrawImage]?.Value){
+          item.Dx -= item.Width /2 ;
+          item.Dy -= item.Width /2 ;
+        }
         break;
     }
     action.IsPainted = true;
