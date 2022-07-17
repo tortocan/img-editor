@@ -28,7 +28,7 @@
                 <div class="btn-group" role="group">
                     <button class="btn btn-outline-primary" type="button" (click)="visibility()">
                         <span
-                            [ngClass]="{'bi bi-eye-fill': selectedItem.IsVisible,'bi bi-eye-slash': !selectedItem.IsVisible}"></span>
+                            [ngClass]="{'bi bi-eye-fill': selectedItemIsVisible,'bi bi-eye-slash': !selectedItemIsVisible}"></span>
                     </button>
                     <button class="btn btn-outline-primary" (click)="download()">Download Image</button>
                     <button class="btn btn-outline-primary" (click)="render()">Render</button>
@@ -47,7 +47,7 @@
         <div class="col">
             <div class="wrapper">
                 <div class="alert " role="alert" *ngFor="let item of items, index as i " (click)="selectItem(item)"
-                    [ngClass]="{'alert-info': i % 2 == 0,'alert-primary': i % 2 == 1,'alert-light': selectedItem.Id === item.Id }">
+                    [ngClass]="{'alert-info': i % 2 == 0,'alert-primary': i % 2 == 1,'alert-light': selectedItemId === item.Id }">
                     {{
                     toViewModel(item) | json}}"
                 </div>

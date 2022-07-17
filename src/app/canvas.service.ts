@@ -12,10 +12,6 @@ export interface ICanvasItem {
   OriginallWidth: any;
   IsExcluded: boolean;
   Image: any;
-  IsYAxisCentered: boolean;
-  IsXAxisCentered: boolean;
-  IsHigher: boolean;
-  IsWider: boolean;
   Url: string
   Dx: number
   Dy: number,
@@ -53,10 +49,6 @@ export interface ICanvasAction {
 
 
 export interface ICanvasItemViewModel {
-  IsYAxisCentered: boolean;
-  IsXAxisCentered: boolean;
-  IsHigher: boolean;
-  IsWider: boolean;
   Url: string
   Dx: number
   Dy: number,
@@ -116,31 +108,31 @@ export class CanvasService {
     action.Value = Arrows[align];
     console.log(item.Dx, item.Dy)
     switch (align) {
-      case Arrows.Up:
+      case Arrows.Top:
         item.Dy = item.Height / 2;
         break;
-      case Arrows.Down:
+      case Arrows.Bottom:
         item.Dy = this.canvasContext.canvas.height - (item.Height / 2);
         break;
       case Arrows.Right:
         item.Dx = this.canvasContext.canvas.width - (item.Width / 2);
         break;
-      case Arrows.UpRight:
+      case Arrows.TopRight:
         item.Dy = item.Height / 2;
         item.Dx = this.canvasContext.canvas.width - (item.Width / 2);
         break;
-      case Arrows.DownRight:
+      case Arrows.BottomRight:
         item.Dy = this.canvasContext.canvas.height - (item.Height / 2);
         item.Dx = this.canvasContext.canvas.width - (item.Width / 2);
         break;
       case Arrows.Left:
         item.Dx = item.Width / 2;
         break;
-      case Arrows.UpLeft:
+      case Arrows.TopLeft:
         item.Dy = item.Height / 2;
         item.Dx = item.Width / 2;
         break;
-      case Arrows.DowLeft:
+      case Arrows.BottomLeft:
         item.Dy = this.canvasContext.canvas.height - (item.Height / 2);
         item.Dx = (item.Width / 2);
         break;
@@ -161,28 +153,28 @@ export class CanvasService {
     action.Value = Arrows[direction];
     console.log(item.Dx, item.Dy)
     switch (direction) {
-      case Arrows.Up:
+      case Arrows.Top:
         item.Dy--;
         break;
-      case Arrows.UpRight:
+      case Arrows.TopRight:
         item.Dy--;
         item.Dx++;
         break;
       case Arrows.Left:
         item.Dx--;
         break;
-      case Arrows.UpLeft:
+      case Arrows.TopLeft:
         item.Dy--;
         item.Dx--;
         break;
-      case Arrows.Down:
+      case Arrows.Bottom:
         item.Dy++;
         break;
-      case Arrows.DowLeft:
+      case Arrows.BottomLeft:
         item.Dy++;
         item.Dx--;
         break;
-      case Arrows.DownRight:
+      case Arrows.BottomRight:
         item.Dy++;
         item.Dx++;
         break;
@@ -206,7 +198,6 @@ export class CanvasService {
       item.Actions[action].Value = 360;
     }
     this.canvasContext.save();
-    if (item.Type != CanvasActions.DrawText) this.centerItem(item);
     let w = item.Width;
     let h = item.Height;
     let oDx = item.Dx + w / 2;
@@ -276,7 +267,53 @@ export class CanvasService {
     }
   }
 
-  setCanvasDisplayContext(canvasContext: CanvasRenderingContext2D) { this.canvasDisplayContext = canvasContext; this.canvasContext = canvasContext; }
+  getCursorPosition(event: any) {
+    const rect = this.canvasContext.canvas.getBoundingClientRect();
+    return {
+      x: ((event.clientX - rect.left) / (rect.right - rect.left)) * this.canvasContext.canvas.width,
+      y: ((event.clientY - rect.top) / (rect.bottom - rect.top)) * this.canvasContext.canvas.height,
+    };
+  }
+
+  setCanvasDisplayContext(canvasContext: CanvasRenderingContext2D) {
+    this.canvasDisplayContext = canvasContext; this.canvasContext = canvasContext;
+    // Listen for mouse moves
+    if(this.canvasContext.canvas.parentElement) {
+      this.canvasContext.canvas.parentElement.addEventListener('click', (event: any) => {
+
+        // this.clearSelectItem();
+      })
+    }
+    this.canvasContext.canvas.addEventListener('click', (event: any) => {
+      let pos = this.getCursorPosition(event)
+      console.log(pos)
+      let count = 0;
+      let imgData = this.canvasContext.getImageData(pos.x, pos.y, 1, 1);
+      this.clearSelectItem();
+      this.items.filter(x=>x.IsVisible).sort((a, b) => (a.LayerIndex < b.LayerIndex) ? 1 : -1).forEach(x => {
+
+
+        let dx = x.Dx;
+        let dy = x.Dy;
+        let mdy = dy + x.Height;
+        let mdx = dx + x.Width;
+        if (x.Type == CanvasActions.DrawText) {
+          mdy = dy + x.Height / 2;
+          mdx = dx + x.Width / 2;
+          dx -= x.Width / 2
+          dy -= x.Height / 2
+        }
+        console.log('mdy:'+mdy)
+
+        console.log(dx, dy, mdx, mdy)
+        if (pos.x >= dx && pos.y >= dy && pos.x <= mdx && pos.y <= mdy) {
+          this.selectItem(x)
+          count++
+        }
+      });
+      console.log(count)
+    });
+  }
   setCanvasActionContext(canvasActionContext: CanvasRenderingContext2D) { this.canvasActionContext = canvasActionContext; }
 
   getImageFromUrl(img: ICanvasItem): Promise<ICanvasItem> {
@@ -354,24 +391,6 @@ export class CanvasService {
     })
   }
 
-  private centerItem(item: ICanvasItem) {
-    let canvas = this.canvasContext.canvas;
-    item.IsWider = canvas.width < item.Width;
-    item.IsHigher = canvas.height < item.Height;
-    let dxCenter = (canvas.width / 2) - (item.Width / 2);
-    let dyCenter = (canvas.height / 2) - (item.Height / 2);
-    if (item.Dx != dxCenter) {
-      //Center Item
-      item.Dx = dxCenter;
-      item.IsXAxisCentered = true;
-    } else { item.IsXAxisCentered = false; }
-
-    if (item.Dy != dyCenter) {
-      //Center Item
-      item.Dy = dyCenter;
-      item.IsYAxisCentered = true;
-    } else { item.IsYAxisCentered = false; }
-  }
 
   private drawImage(item: ICanvasItem): void {
     this.canvasContext.save();
@@ -381,7 +400,9 @@ export class CanvasService {
       item.OriginallWidth = item.Image.width;
       item.OriginalHeight = item.Image.height;
     }
-    this.canvasContext.drawImage(item.Image, item.Dx ?? 0, item.Dy ?? 0, item.Width, item.Height);
+    item.Dx = item.Dx ?? 0;
+    item.Dy = item.Dy ?? 0
+    this.canvasContext.drawImage(item.Image, item.Dx, item.Dy, item.Width, item.Height);
     item.GlobalCompositeOperation = this.canvasContext.globalCompositeOperation;
     item.Type = CanvasActions.DrawImage;
     this.saveAction(item, CanvasActions.DrawImage);
@@ -434,6 +455,14 @@ export class CanvasService {
     item.Actions[action].Name = CanvasActions[action];
     item.Actions[action].IsPainted = true;
     this.pushItem(item);
+  }
+
+  clearSelectItem() {
+    if (this.selectedItem?.Type) {
+      this.removeAction(this.selectedItem, CanvasActions.SelectItem);
+      this.renderItems(this.items)
+    }
+    this.renderItems(this.items);
   }
 
   selectItem(item: ICanvasItem) {
@@ -530,7 +559,7 @@ export class CanvasService {
     this.items = filter;
     this.clearContext();
     filter.forEach(x => {
-      this.renderItem(x)
+      this.renderItem(x);
     });
     this.switchContext(Context.Display)
   }
@@ -547,6 +576,8 @@ export class CanvasService {
     }
     return false;
   }
+
+
 
   switchContext(context: Context) {
     switch (context) {

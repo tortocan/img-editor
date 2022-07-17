@@ -1,14 +1,14 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 
 export enum Arrows {
-  Up,
-  Down,
+  Top,
+  Bottom,
   Left,
   Right,
-  UpRight,
-  DownRight,
-  DowLeft,
-  UpLeft,
+  TopRight,
+  BottomRight,
+  BottomLeft,
+  TopLeft,
   Center
 }
 
