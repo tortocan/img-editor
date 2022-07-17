@@ -110,5 +110,7 @@
       }
     }
   },
-  "defaultProject": "img-editor"
+  "cli": {
+    "analytics": false
+  }
 }
