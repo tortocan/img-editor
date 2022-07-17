@@ -18,8 +18,6 @@ export class CanvasComponent implements AfterViewInit {
 
   constructor(private canvasService: CanvasService) { }
   items: ICanvasItem[] = [];
-  angle: number = 0;
-  resizePercentage: number = 0;
   resizeStep: number = 10;
   zoomPercentage: number = 0;
   pzoomPercentage: number = 0;
@@ -27,11 +25,18 @@ export class CanvasComponent implements AfterViewInit {
   canvasHeight: number = 500;
   canvasWidth: number = 250;
 
+
+  public get resizePercentage(): number {
+    return this.canvasService.selectedItem?.Actions[CanvasActions.Resize]?.Value ? this.canvasService.selectedItem.Actions[CanvasActions.Resize].Value : 0;
+  }
+  public get angle(): number {
+    return this.canvasService.selectedItem?.Actions[CanvasActions.Rotate]?.Value ? this.canvasService.selectedItem.Actions[CanvasActions.Rotate].Value : 0;
+  }
   public get selectedItemIsVisible(): boolean {
     return this.canvasService?.selectedItem?.IsVisible ?? false;
   }
   public get selectedItemId(): string {
-    return  this.canvasService?.selectedItem?.Id ?? '';
+    return this.canvasService?.selectedItem?.Id ?? '';
   }
 
   public get direction(): typeof Arrows {
@@ -105,8 +110,6 @@ export class CanvasComponent implements AfterViewInit {
   }
 
   selectItem(item: ICanvasItem) {
-    this.angle = item?.Actions[CanvasActions.Rotate]?.Value ? item.Actions[CanvasActions.Rotate].Value : 0;
-    this.resizePercentage = item?.Actions[CanvasActions.Resize]?.Value ? item.Actions[CanvasActions.Resize].Value : 0;
     this.canvasService.selectItem(item);
     this.items = this.canvasService.items;
     this.canvasService.switchContext(Context.Action);
@@ -120,8 +123,6 @@ export class CanvasComponent implements AfterViewInit {
   }
 
   restore() {
-    this.angle = 0;
-    this.resizePercentage = 0;
     this.zoomPercentage = 0;
     this.canvasService.selectedItem = {} as ICanvasItem;
     this.canvasService.restore();
@@ -136,11 +137,10 @@ export class CanvasComponent implements AfterViewInit {
     $element.stopPropagation();
     if (this.canvasService.selectedItem) {
       let item = this.canvasService.selectedItem;
-      this.resizePercentage = $element.target.valueAsNumber;
       if (!item.Actions[CanvasActions.Resize]) {
         item.Actions[CanvasActions.Resize] = {} as ICanvasAction;
       }
-      item.Actions[CanvasActions.Resize].Value = this.resizePercentage;
+      item.Actions[CanvasActions.Resize].Value = $element.target.valueAsNumber;
       this.canvasService.resize(item);
       this.items = this.canvasService.items
       this.render();
@@ -151,9 +151,8 @@ export class CanvasComponent implements AfterViewInit {
     $element.stopPropagation();
     if (this.canvasService.selectedItem) {
       let item = this.canvasService.selectedItem;
-      this.angle = $element.target.value;
       item.Actions[CanvasActions.Rotate] = item.Actions[CanvasActions.Rotate] ? item.Actions[CanvasActions.Rotate] : { Value: this.angle } as ICanvasAction;
-      item.Actions[CanvasActions.Rotate].Value = this.angle;
+      item.Actions[CanvasActions.Rotate].Value = $element.target.value;
       this.canvasService.rotateItem(item);
       this.render();
     }
