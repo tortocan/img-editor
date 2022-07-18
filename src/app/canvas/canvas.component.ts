@@ -114,12 +114,6 @@ export class CanvasComponent implements AfterViewInit {
 
   selectItem(item: ICanvasItem) {
     this.canvasService.selectItem(item);
-    // this.canvasService.switchContext(Context.Action);
-    // this.canvasService.resetContext();
-    // this.white2transparent();
-    // this.canvasService.switchContext(Context.Display);
-
-    // this.render();
   }
 
   save() {

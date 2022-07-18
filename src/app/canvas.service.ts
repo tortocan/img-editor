@@ -297,57 +297,90 @@ export class CanvasService {
     };
   }
 
+  isPointInPath(x: ICanvasItem, event: any) {
+    let pos = this.getCursorPosition(event)
+    let dx = x.Dx;
+    let dy = x.Dy;
+    let mdx = dx + x.Width;
+    let mdy = dy + x.Height;
+    if (x.Type == CanvasActions.DrawText) {
+      mdy = dy + x.Height / 2;
+      mdx = dx + x.Width / 2;
+      dx -= x.Width / 2
+      dy -= x.Height / 2
+    }
+    let isInXAxis = pos.x >= dx && pos.x <= mdx;
+    let isInYAxis = pos.y >= dy && pos.y <= mdy;
+    return {
+      isInXAxis,
+      isInYAxis,
+      posX: pos.x,
+      posY: pos.y
+    }
+  }
   setCanvasDisplayContext(canvasContext: CanvasRenderingContext2D) {
     this.canvasDisplayContext = canvasContext; this.canvasContext = canvasContext;
-    var mouseDown = false;
+    let moveItem = false;
     // Listen for mouse moves
-    // this.canvasContext.canvas.addEventListener('mousemove', (event: any) => {
-    //   event.stopPropagation();
-    //   if(this.selectedItem) {
-    //       let pos = this.getCursorPosition(event)
-    //       this.selectedItem.Dx = pos.x
-    //       this.selectedItem.Dy = pos.y
-    //       if(this.selectedItem?.Actions[CanvasActions.DrawImage]?.Value) {
-    //         this.selectedItem.Dx -=  (this.selectedItem.Width / 2)
-    //         this.selectedItem.Dy -=  (this.selectedItem.Height / 2)
-    //       }
-    //       this.renderItems(this.items)
-    //   }
-    // });
+    this.canvasContext.canvas.addEventListener('mousedown', (event: any) => {
+      event.stopPropagation();
+      moveItem = true;
+      if (this.selectedItem) {
+        this.removeAction(this.selectedItem, CanvasActions.Align);
+        this.removeAction(this.selectedItem, CanvasActions.Move);
+      }
+    });
 
+    this.canvasContext.canvas.addEventListener('mouseup', (event: any) => {
+      event.stopPropagation();
+      moveItem = false;
+    });
+    this.canvasContext.canvas.addEventListener('mouseleave', (event: any) => {
+      event.stopPropagation();
+      moveItem = false;
+    });
 
+    this.canvasContext.canvas.addEventListener('mousemove', (event: any) => {
+      event.stopPropagation();
+      if (this.selectedItem && moveItem) {
+        let isInPath = this.isPointInPath(this.selectedItem, event);
+
+        if (isInPath.isInXAxis && isInPath.isInYAxis) {
+          this.selectedItem.Dx = isInPath.posX
+          this.selectedItem.Dy = isInPath.posY
+          if (this.selectedItem?.Actions[CanvasActions.DrawImage]?.Value) {
+            this.selectedItem.Dx -= (this.selectedItem.Width / 2)
+            this.selectedItem.Dy -= (this.selectedItem.Height / 2)
+          }
+          this.renderItems()
+        }
+
+      }
+    });
 
     this.canvasContext.canvas.addEventListener('click', (event: any) => {
       let pos = this.getCursorPosition(event)
       let imgData = this.canvasContext.getImageData(pos.x, pos.y, 1, 1);
       let filterItems = this.items.filter(x => x.IsVisible && x.Id != this?.selectedItem?.Id);
 
-      filterItems.sort((a, b) => (a.LayerIndex < b.LayerIndex) ? 1 : -1).every(x => {
-        let dx = x.Dx;
-        let dy = x.Dy;
-        let mdx = dx + x.Width;
-        let mdy = dy + x.Height;
-        if (x.Type == CanvasActions.DrawText) {
-          mdy = dy + x.Height / 2;
-          mdx = dx + x.Width / 2;
-          dx -= x.Width / 2
-          dy -= x.Height / 2
-        }
-        console.log(pos.x, pos.y)
-        console.log(x.Dx, x.Dy)
-        let isInXAxis = pos.x >= dx && pos.x <= mdx;
-        let isInYAxis = pos.y >= dy && pos.y <= mdy;
-        console.log(x.Url, isInXAxis, isInYAxis)
-        if (x.Id != this?.selectedItem?.Id && isInXAxis && isInYAxis) {
+      let isNoSelect = filterItems.sort((a, b) => (a.LayerIndex < b.LayerIndex) ? 1 : -1).every(x => {
+        let isInPath = this.isPointInPath(x, event);
+        if (x.Id != this?.selectedItem?.Id && isInPath.isInXAxis && isInPath.isInYAxis) {
           this.selectItem(x);
           return false;
         }
         return true;
       });
 
+      if (isNoSelect && this.selectedItem) {
+        this.selectedItem = undefined;
+        this.resetContext();
+        this.renderItems();
+      }
 
     });
   }
+
   setCanvasActionContext(canvasActionContext: CanvasRenderingContext2D) { this.canvasActionContext = canvasActionContext; }
 
   getImageFromUrl(img: ICanvasItem): Promise<ICanvasItem> {
