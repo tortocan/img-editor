@@ -8,10 +8,16 @@ import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 export class RangeComponent implements OnInit {
   @Input()
   step:number = 5;
+  @Input()
+  minStep:number = 0;
+  @Input()
+  maxStep:number = 360;
   @Output()
   onChange: EventEmitter<any> = new EventEmitter();
   @Input()
   value:number = 0;
+  @Input()
+  labelValue:string = '';
   @Input()
   title: string = '';
 
@@ -23,11 +29,24 @@ export class RangeComponent implements OnInit {
 
   private increaseOrDecrease($element: any, isNegative: boolean = false) {
     $element.stopPropagation();
-    if (isNegative) {
-      this.value -= this.step;
+    let value =  this.value ??  $element.target.value;
+    let nextValue = value;
+
+    if (isNegative ) {
+      nextValue -= this.step;
     } else {
-      this.value += this.step;
+      nextValue += this.step;
     }
+
+    if(nextValue <= this.minStep) {
+      value = this.minStep
+    }else if(nextValue >= this.maxStep){
+      value = this.maxStep;
+    }else {
+      value = nextValue;
+    }
+
+    this.value = value;
     $element.target.value = this.value;
     $element.target.valueAsNumber = +this.value;
   }

@@ -75,7 +75,6 @@ class Guid {
 })
 export class CanvasService {
   selectedItem?: ICanvasItem;
-  postSelectedItem?: ICanvasItem;
   count: number = 0;
   clearContext() {
     this.canvasContext.clearRect(0, 0, this.canvasContext.canvas.width, this.canvasContext.canvas.height)
@@ -302,8 +301,14 @@ export class CanvasService {
     this.canvasDisplayContext = canvasContext; this.canvasContext = canvasContext;
     var mouseDown = false;
     // Listen for mouse moves
-    this.canvasContext.canvas.addEventListener('mousedown', (event: any) => {
-      let pos = this.getCursorPosition(event)
+    this.canvasContext.canvas.addEventListener('mousemove', (event: any) => {
+      event.stopPropagation();
+      if(this.selectedItem) {
+          let pos = this.getCursorPosition(event)
+          this.selectedItem.Dx = pos.x
+          this.selectedItem.Dy = pos.y
+          this.renderItems(this.items)
+      }
     });
 
 
@@ -312,7 +317,7 @@ export class CanvasService {
       let pos = this.getCursorPosition(event)
       let imgData = this.canvasContext.getImageData(pos.x, pos.y, 1, 1);
       let filterItems = this.items.filter(x => x.IsVisible && !x?.Actions[CanvasActions.SelectItem]?.Value);
-      this.clearSelectItem();
+      this.clearSelectedItem();
 
       filterItems.sort((a, b) => (a.LayerIndex < b.LayerIndex) ? 1 : -1).every(x => {
         let dx = x.Dx;
@@ -326,7 +331,6 @@ export class CanvasService {
           dy -= x.Height / 2
         }
         if (!x?.Actions[CanvasActions.SelectItem]?.Value && pos.x >= dx && pos.y >= dy && pos.x <= mdx && pos.y <= mdy) {
-          this.clearSelectItem();
           this.selectItem(x);
           this.switchContext(Context.Action);
           this.resetContext();
@@ -336,6 +340,7 @@ export class CanvasService {
         }
         return false;
       });
+      this.renderItems(this.items);
 
     });
   }
@@ -376,7 +381,6 @@ export class CanvasService {
         item.Actions[action].Value = 0;
         break
       case CanvasActions.SelectItem:
-        this.items = this.items.filter(x => x.Type != CanvasActions.SelectItem)
         this.selectedItem = undefined;
         break
     }
@@ -482,40 +486,40 @@ export class CanvasService {
     this.pushItem(item);
   }
 
-  clearSelectItem() {
-    if (this.selectedItem?.Type) {
-      this.removeAction(this.selectedItem, CanvasActions.SelectItem);
-      this.renderItems(this.items)
-    }
+  clearSelectedItem() {
+    this.items.filter(x => x?.Actions[CanvasActions.SelectItem]?.Value).forEach(x => {
+      this.removeAction(x, CanvasActions.SelectItem);
+    })
   }
 
   selectItem(item: ICanvasItem) {
 
+    this.clearSelectedItem();
     if (item.Type == CanvasActions.SelectItem) return;
-    if (this.postSelectedItem?.Type) {
-      this.removeAction(this.postSelectedItem, CanvasActions.SelectItem);
-      this.renderItems(this.items)
-    }
+    if(this.selectedItem)
+  {this.removeAction(this.selectedItem,CanvasActions.SelectItem);}
+    this.removeAction(item,CanvasActions.SelectItem);
 
-    let select = {
-      LayerIndex: 9999,
-      Width: item.Width,
-      Height: item.Height,
-      Dx: item.Dx,
-      Dy: item.Dy,
-      Type: CanvasActions.SelectItem,
-      Context: Context.Display
-    } as ICanvasItem
-    select.Actions = [];
-    select.Actions[select.Type] = {
-      Value: item.Id,
-      IsPainted: false,
-    } as ICanvasAction
-    item.Actions[select.Type] = select.Actions[select.Type];
     this.selectedItem = item;
-    this.postSelectedItem = this.selectedItem;
-    if(item.IsVisible) { this.drawSelect(item)
-    this.saveAction(item, CanvasActions.SelectItem);}
+    if (item.IsVisible) {
+      let select = {
+        LayerIndex: 9999,
+        Width: item.Width,
+        Height: item.Height,
+        Dx: item.Dx,
+        Dy: item.Dy,
+        Type: CanvasActions.SelectItem,
+        Context: Context.Display
+      } as ICanvasItem
+      select.Actions = [];
+      select.Actions[select.Type] = {
+        Value: item.Id,
+        IsPainted: false,
+      } as ICanvasAction
+      item.Actions[select.Type] = select.Actions[select.Type];
+      this.drawSelect(item)
+      this.saveAction(item, CanvasActions.SelectItem);
+    }
   }
 
   private drawSelect(item: ICanvasItem) {
@@ -659,6 +663,7 @@ export class CanvasService {
       this.resize(item);
       item.Actions[CanvasActions.Resize].IsRendered = true;
     }
+
 
     if (this.validateAction(item, CanvasActions.Rotate)) {
       this.rotateItem(item);

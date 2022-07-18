@@ -48,7 +48,7 @@
                                 <img class="img-fluid img-thumbnail galery-thumbnail" src="{{item.Url}}">
 
                                 {{item.Type}}
-                                {{item.Url ?? item.Actions[item.Type]?.Value ?? ''}}
+                                {{item?.Url ?? item.Actions[item.Type]?.Value ?? ''}}
                             </div>
                         </div>
                     </div>
@@ -62,12 +62,12 @@
                     <div class="row" *ngIf="enableEditor">
                         <div class="col d-flex align-items-center justify-content-center">
                             <div class="input-group mb-3 w-50">
-                                <app-range [title]="'Rotate'" [value]="angle" [step]="rotateStep"
+                                <app-range [title]="'Rotate'" [value]="angle"  [labelValue]="angle.toString()+'°'" [step]="rotateStep"
                                     (onChange)="rotate($event)">
                                 </app-range>
-                                <app-range [title]="'Resize'" [value]="resizePercentage" [step]="rotateStep"
+                                <app-range [title]="'Resize'" [value]="resizePercentage"  [labelValue]="'width:' + (selectedItem.Width | number: '1.0-0') + 'px height:' + (selectedItem.Height | number: '1.0-0') +'px' " [step]="rotateStep"
                                     (onChange)="resize($event)"></app-range>
-                                <app-range [title]="'Zoom'" [value]="zoomPercentage" (onChange)="zoom($event)">
+                                <app-range [title]="'Zoom'" [value]="zoomPercentage"  [labelValue]="zoomPercentage.toString()" (onChange)="zoom($event)">
                                 </app-range>
                             </div>
                         </div>

@@ -5,7 +5,7 @@
         <label for="rotate-range" class="form-label">
             <span class="badge rounded-pill bg-primary p-1 mx-1">{{title}}</span>
 
-            <span class="badge rounded-pill bg-primary p-1">{{value}} </span>
+            <span class="badge rounded-pill bg-primary p-1">{{labelValue}} </span>
         </label>
         <input class="form-range" id="rotate-range" type="range" name="range" step="{{step}}"
             min="0" max="360" value="{{value}}" (change)="change($event)">

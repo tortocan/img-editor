@@ -119,6 +119,7 @@ export class CanvasComponent implements AfterViewInit {
     this.canvasService.resetContext();
     this.white2transparent();
     this.canvasService.switchContext(Context.Display);
+    this.render();
   }
 
   save() {
