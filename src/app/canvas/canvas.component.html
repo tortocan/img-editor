@@ -52,14 +52,14 @@
                             </div>
                         </div>
                     </div>
-                    <div class="row">
+                    <div class="row" *ngIf="enableEditor">
                         <div class="col d-flex align-items-center justify-content-center">
                             <app-arrows [title]="'Align'" (onClick)="align($event)"></app-arrows>
                             <app-arrows [title]="'Move'" (onClick)="move($event)" [disable]="[direction.Center]">
                             </app-arrows>
                         </div>
                     </div>
-                    <div class="row">
+                    <div class="row" *ngIf="enableEditor">
                         <div class="col d-flex align-items-center justify-content-center">
                             <div class="input-group mb-3 w-50">
                                 <app-range [title]="'Rotate'" [value]="angle" [step]="rotateStep"

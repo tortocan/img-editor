@@ -514,8 +514,8 @@ export class CanvasService {
     item.Actions[select.Type] = select.Actions[select.Type];
     this.selectedItem = item;
     this.postSelectedItem = this.selectedItem;
-    this.drawSelect(item)
-    this.saveAction(item, CanvasActions.SelectItem);
+    if(item.IsVisible) { this.drawSelect(item)
+    this.saveAction(item, CanvasActions.SelectItem);}
   }
 
   private drawSelect(item: ICanvasItem) {

@@ -1,5 +1,4 @@
 import { AfterViewInit, Component, ElementRef, ViewChild } from '@angular/core';
-import { retry } from 'rxjs';
 import { Arrows } from '../arrows/arrows.component';
 import { CanvasActions, CanvasService, Context, ICanvasAction, ICanvasItem, ICanvasItemViewModel } from '../canvas.service';
 
@@ -26,6 +25,10 @@ export class CanvasComponent implements AfterViewInit {
   canvasHeight: number = 500;
   canvasWidth: number = 250;
 
+
+  public get enableEditor(): boolean {
+    return this.selectedItem?.Type != undefined && this.selectedItem.IsVisible;
+  }
 
   public get resizePercentage(): number {
     return this.canvasService.selectedItem?.Actions[CanvasActions.Resize]?.Value ? this.canvasService.selectedItem.Actions[CanvasActions.Resize].Value : 0;
