@@ -314,7 +314,7 @@ export class CanvasService {
       let filterItems = this.items.filter(x => x.IsVisible && !x?.Actions[CanvasActions.SelectItem]?.Value);
       this.clearSelectItem();
 
-      filterItems.sort((a, b) => (a.LayerIndex < b.LayerIndex) ? 1 : -1).forEach(x => {
+      filterItems.sort((a, b) => (a.LayerIndex < b.LayerIndex) ? 1 : -1).every(x => {
         let dx = x.Dx;
         let dy = x.Dy;
         let mdy = dy + x.Height;
@@ -325,11 +325,18 @@ export class CanvasService {
           dx -= x.Width / 2
           dy -= x.Height / 2
         }
-        if (pos.x >= dx && pos.y >= dy && pos.x <= mdx && pos.y <= mdy) {
+        if (!x?.Actions[CanvasActions.SelectItem]?.Value && pos.x >= dx && pos.y >= dy && pos.x <= mdx && pos.y <= mdy) {
           this.clearSelectItem();
-          this.selectItem(x)
+          this.selectItem(x);
+          this.switchContext(Context.Action);
+          this.resetContext();
+          this.white2transparent(x);
+          this.switchContext(Context.Display);
+          return true;
         }
+        return false;
       });
+
     });
   }
   setCanvasActionContext(canvasActionContext: CanvasRenderingContext2D) { this.canvasActionContext = canvasActionContext; }

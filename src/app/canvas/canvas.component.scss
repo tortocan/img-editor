@@ -22,3 +22,20 @@ canvas {
     width: 100%;
     max-width: 300px;
 }
+
+.wrapper {
+    max-height: 220vh;
+    overflow: auto;
+}
+
+.galery-thumbnail {
+    width: 30px;
+    height: 30px;
+    overflow:hidden;
+}
+
+#editor  {
+    .alert {
+        cursor: pointer;
+    }
+}

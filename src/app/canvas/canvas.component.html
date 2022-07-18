@@ -4,54 +4,110 @@
             <canvas class="canvas-display" #canvas width="{{canvasWidth}}" height="{{canvasHeight}}">
             </canvas>
         </div>
-        <div class="col-6 d-flex align-items-center justify-content-center">
-            <canvas class="canvas-action" #canvasAction width="{{canvasWidth}}" height="{{canvasHeight}}">
-            </canvas>
-        </div>
-    </div>
-    <div class="row align-items-center">
-        <div class="col-6 d-flex align-items-center justify-content-center">
-
-            <app-arrows [title]="'Align'" (onClick)="align($event)"></app-arrows>
-            <app-arrows [title]="'Move'" (onClick)="move($event)" [disable]="[direction.Center]"></app-arrows>
-
-            <div class="input-group mb-3 w-50">
-                <app-range [title]="'Rotate'" [value]="angle" [step]="rotateStep" (onChange)="rotate($event)" ></app-range>
-                <app-range [title]="'Resize'" [value]="resizePercentage" [step]="rotateStep" (onChange)="resize($event)" ></app-range>
-                <app-range [title]="'Zoom'" [value]="zoomPercentage" (onChange)="zoom($event)" ></app-range>
-            </div>
-
-        </div>
-        <div class="col  d-flex align-items-center justify-content-center">
-
-            <div class="btn-groups">
-                <div class="btn-group" role="group">
-                    <button class="btn btn-outline-primary" type="button" (click)="visibility()">
-                        <span
-                            [ngClass]="{'bi bi-eye-fill': selectedItemIsVisible,'bi bi-eye-slash': !selectedItemIsVisible}"></span>
+        <div class="col-6 align-self-start">
+            <ul class="nav nav-tabs" id="myTab" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="select-preview-tab" data-bs-toggle="tab" data-bs-target="#select-preview" type="button"
+                        role="tab" aria-controls="select-preview" aria-selected="false">
+                        Preview
                     </button>
-                    <button class="btn btn-outline-primary" (click)="download()">Download Image</button>
-                    <button class="btn btn-outline-primary" (click)="render()">Render</button>
-                    <button class="btn btn-outline-primary" (click)="save()">Save</button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link active" id="editor-tab" data-bs-toggle="tab" data-bs-target="#editor"
+                        type="button" role="tab" aria-controls="editor" aria-selected="true">
+                        Editor
+                    </button>
+                </li>
 
-                    <button class="btn btn-outline-primary" (click)="restore()">Restore</button>
-                    <button class="btn btn-outline-primary" (click)="deleteItem()">Delete</button>
-                    <button class="btn btn-outline-primary" (click)="clear()">Clear</button>
-                    <button class="btn btn-outline-primary" (click)="loadItem()">Load</button>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="actions-tab" data-bs-toggle="tab" data-bs-target="#actions"
+                        type="button" role="tab" aria-controls="actions" aria-selected="false">Actions</button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="menu-tab" data-bs-toggle="tab" data-bs-target="#menu" type="button"
+                        role="tab" aria-controls="actions" aria-selected="false">Menu</button>
+                </li>
+            </ul>
+            <div class="tab-content d-flex justify-content-start" id="myTabContent">
+                <div class="tab-pane fade" id="select-preview" role="tabpanel" aria-labelledby="select-preview-tab">
+                    <canvas class="canvas-action" #canvasAction width="{{canvasWidth}}" height="{{canvasHeight}}">
+                    </canvas>
+                </div>
+
+                <div class="tab-pane fade show active w-100" id="editor" role="tabpanel" aria-labelledby="editor-tab">
+                    <div class="row">
+                        <div class="col">
+                            <div class="alert " role="alert" *ngFor="let item of items, index as i "
+                                (click)="selectItem(item)"
+                                [ngClass]="{'alert-info': i % 2 == 0,'alert-primary': i % 2 == 1,'border border-dark': selectedItem.Id === item.Id }">
+                                <button class="btn btn-outline-primary" type="button" (click)="visibility(item)">
+                                    <span
+                                        [ngClass]="{'bi bi-eye-fill': item.IsVisible,'bi bi-eye-slash': !item.IsVisible}"></span>
+                                </button>
+
+                                <img class="img-fluid img-thumbnail galery-thumbnail" src="{{item.Url}}">
+
+                                {{item.Type}}
+                                {{item.Url ?? item.Actions[item.Type]?.Value ?? ''}}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col d-flex align-items-center justify-content-center">
+                            <app-arrows [title]="'Align'" (onClick)="align($event)"></app-arrows>
+                            <app-arrows [title]="'Move'" (onClick)="move($event)" [disable]="[direction.Center]">
+                            </app-arrows>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col d-flex align-items-center justify-content-center">
+                            <div class="input-group mb-3 w-50">
+                                <app-range [title]="'Rotate'" [value]="angle" [step]="rotateStep"
+                                    (onChange)="rotate($event)">
+                                </app-range>
+                                <app-range [title]="'Resize'" [value]="resizePercentage" [step]="rotateStep"
+                                    (onChange)="resize($event)"></app-range>
+                                <app-range [title]="'Zoom'" [value]="zoomPercentage" (onChange)="zoom($event)">
+                                </app-range>
+                            </div>
+                        </div>
+                    </div>
+
+
+                </div>
+
+                <div class="tab-pane fade" id="actions" role="tabpanel" aria-labelledby="actions-tab">
+                    <div class="wrapper">
+                        <div class="alert " role="alert" *ngFor="let item of selectedItem.Actions, index as i"
+                            [ngClass]="{'alert-info': i % 2 == 0,'alert-primary': i % 2 == 1}">
+                            {{ actionToViewModel(item) | json}}
+                        </div>
+
+                    </div>
+                </div>
+                <div class="tab-pane fade" id="menu" role="tabpanel" aria-labelledby="menu-tab">
+                    <div class="row align-items-center">
+                        <div class="col  d-flex align-items-center justify-content-center">
+
+                            <div class="btn-groups">
+                                <div class="btn-group" role="group">
+                                    <button class="btn btn-outline-primary" (click)="download()">Download Image</button>
+                                    <button class="btn btn-outline-primary" (click)="render()">Render</button>
+                                    <button class="btn btn-outline-primary" (click)="save()">Save</button>
+
+                                    <button class="btn btn-outline-primary" (click)="restore()">Restore</button>
+                                    <button class="btn btn-outline-primary" (click)="deleteItem()">Delete</button>
+                                    <button class="btn btn-outline-primary" (click)="clear()">Clear</button>
+                                    <button class="btn btn-outline-primary" (click)="loadItem()">Load</button>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
                 </div>
             </div>
         </div>
+    </div>
 
-    </div>
-    <div class="row">
-        <div class="col">
-            <div class="wrapper">
-                <div class="alert " role="alert" *ngFor="let item of items, index as i " (click)="selectItem(item)"
-                    [ngClass]="{'alert-info': i % 2 == 0,'alert-primary': i % 2 == 1,'alert-light': selectedItemId === item.Id }">
-                    {{
-                    toViewModel(item) | json}}"
-                </div>
-            </div>
-        </div>
-    </div>
+
 </div>

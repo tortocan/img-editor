@@ -1,4 +1,5 @@
 import { AfterViewInit, Component, ElementRef, ViewChild } from '@angular/core';
+import { retry } from 'rxjs';
 import { Arrows } from '../arrows/arrows.component';
 import { CanvasActions, CanvasService, Context, ICanvasAction, ICanvasItem, ICanvasItemViewModel } from '../canvas.service';
 
@@ -35,8 +36,8 @@ export class CanvasComponent implements AfterViewInit {
   public get selectedItemIsVisible(): boolean {
     return this.canvasService?.selectedItem?.IsVisible ?? false;
   }
-  public get selectedItemId(): string {
-    return this.canvasService?.selectedItem?.Id ?? '';
+  public get selectedItem(): ICanvasItem {
+    return this.canvasService?.selectedItem ?? {} as ICanvasItem;
   }
 
   public get direction(): typeof Arrows {
@@ -53,10 +54,9 @@ export class CanvasComponent implements AfterViewInit {
     }
   }
 
-  visibility() {
-    if (this.canvasService.selectedItem) {
-      this.canvasService.selectedItem.IsVisible = !this.canvasService.selectedItem.IsVisible;
-    }
+
+  visibility(item: ICanvasItem) {
+    item.IsVisible = !item.IsVisible;
     this.render();
   }
 
@@ -162,17 +162,25 @@ export class CanvasComponent implements AfterViewInit {
     this.canvasService.download();
   }
 
-  toViewModel(item: ICanvasItem): ICanvasItemViewModel {
+  actionToViewModel(x: ICanvasAction): ICanvasAction {
+    if(!x) return {} as ICanvasAction;
+    return {
+      Value: x.Value.length > 25 ? x.Value.substring(0, 25) : x.Value,
+      CurrentValue: x?.CurrentValue?.length > 25 ? x?.CurrentValue?.substring(0, 25) : x?.CurrentValue,
+      Name: x.Name,
+      IsPainted: x.IsPainted,
+      IsRendered: x.IsRendered
+    }
+  }
+  actionsToViewModel(item: ICanvasItem): ICanvasAction[] {
     let actionsViewModel: ICanvasAction[] = [];
     item.Actions.forEach(x => {
-      actionsViewModel.push({
-        Value: x.Value.length > 25 ? x.Value.substring(0, 25) : x.Value,
-        CurrentValue: x?.CurrentValue?.length > 25 ? x?.CurrentValue?.substring(0, 25) : x?.CurrentValue,
-        Name: x.Name,
-        IsPainted: x.IsPainted,
-        IsRendered: x.IsRendered
-      } as ICanvasAction)
+      actionsViewModel.push(this.actionToViewModel(x))
     })
+    return actionsViewModel;
+  }
+  toViewModel(item: ICanvasItem): ICanvasItemViewModel {
+    let actionsViewModel = this.actionsToViewModel(item);
     return {
       Type: CanvasActions[item.Type],
       Dx: item?.Dx,
