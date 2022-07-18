@@ -109,5 +109,11 @@
         </div>
     </div>
 
+    <div class="wrapper">
+        <div class="alert " role="alert" *ngFor="let item of items, index as i"
+            [ngClass]="{'alert-info': i % 2 == 0,'alert-primary': i % 2 == 1}">
+            {{ toViewModel(item) | json}}
+        </div>
 
+    </div>
 </div>

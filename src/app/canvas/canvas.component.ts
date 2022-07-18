@@ -67,14 +67,14 @@ export class CanvasComponent implements AfterViewInit {
     if (this.canvasService.selectedItem) {
       this.canvasService.align(this.canvasService.selectedItem, align);
     }
-    this.canvasService.renderItems(this.canvasService.items);
+    this.canvasService.renderItems();
   }
 
   move(direction: Arrows) {
     if (this.canvasService.selectedItem) {
       this.canvasService.move(this.canvasService.selectedItem, direction);
     }
-    this.canvasService.renderItems(this.canvasService.items);
+    this.canvasService.renderItems();
   }
 
   zoom($element: any) {
@@ -114,12 +114,12 @@ export class CanvasComponent implements AfterViewInit {
 
   selectItem(item: ICanvasItem) {
     this.canvasService.selectItem(item);
-    this.items = this.canvasService.items;
-    this.canvasService.switchContext(Context.Action);
-    this.canvasService.resetContext();
-    this.white2transparent();
-    this.canvasService.switchContext(Context.Display);
-    this.render();
+    // this.canvasService.switchContext(Context.Action);
+    // this.canvasService.resetContext();
+    // this.white2transparent();
+    // this.canvasService.switchContext(Context.Display);
+
+    // this.render();
   }
 
   save() {
@@ -130,11 +130,11 @@ export class CanvasComponent implements AfterViewInit {
     this.zoomPercentage = 0;
     this.canvasService.selectedItem = {} as ICanvasItem;
     this.canvasService.restore();
-    this.items = this.canvasService.items;
   }
 
   render() {
-    this.canvasService.renderItems(this.items);
+    this.canvasService.resetContext();
+    this.canvasService.renderItems();
   }
 
   resize($element: any) {
@@ -146,7 +146,6 @@ export class CanvasComponent implements AfterViewInit {
       }
       item.Actions[CanvasActions.Resize].Value = $element.target.valueAsNumber;
       this.canvasService.resize(item);
-      this.items = this.canvasService.items
       this.render();
     }
   }
@@ -186,6 +185,7 @@ export class CanvasComponent implements AfterViewInit {
   toViewModel(item: ICanvasItem): ICanvasItemViewModel {
     let actionsViewModel = this.actionsToViewModel(item);
     return {
+      IsVisible: item.IsVisible,
       Type: CanvasActions[item.Type],
       Dx: item?.Dx,
       Dy: item?.Dy,
@@ -260,7 +260,7 @@ export class CanvasComponent implements AfterViewInit {
 
     draw.Actions[CanvasActions.Align] = {
       IsPainted: false,
-      Value: Arrows.Center
+      Value: Arrows.TopRight
     } as ICanvasAction
 
     let text = {
@@ -294,8 +294,8 @@ export class CanvasComponent implements AfterViewInit {
       this.context.canvas.width = phone.Image.width;
       this.context.canvas.height = phone.Image.height;
       this.canvasService.removeItem(loading.Id)
-      this.items = this.canvasService.items;
-      this.canvasService.renderItems(this.canvasService.items);
+      this.items = this.canvasService.getSortedItems();
+      this.canvasService.renderItems();
     })
   }
 
