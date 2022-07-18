@@ -173,7 +173,6 @@ export class CanvasService {
     action.IsRendered = true;
     action.IsPainted = false;
     action.Value = Arrows[direction];
-    console.log(item.Dx, item.Dy)
     switch (direction) {
       case Arrows.Top:
         item.Dy--;
@@ -205,7 +204,6 @@ export class CanvasService {
         break;
     }
     action.IsPainted = true;
-    console.log(item.Dx, item.Dy)
   }
 
   removeItem(id: string) {
@@ -242,7 +240,6 @@ export class CanvasService {
     this.createAction(item, action);
     item.RotateTransformMatrix = this.canvasContext.getTransform();
     this.canvasContext.restore();
-    console.log(item.Actions[action].Value)
   }
 
   resize(item: ICanvasItem) {
@@ -256,7 +253,6 @@ export class CanvasService {
     if (item.Actions[CanvasActions.DrawImage]) {
       let w = item.Width;
       let h = item.Height;
-      console.log(w, h)
       if (resizeValue == 0) {
         w = item.OriginallWidth;
         h = item.OriginalHeight;
@@ -269,7 +265,6 @@ export class CanvasService {
       }
       item.Width = w;
       item.Height = h;
-      console.log(w, h)
       this.createAction(item, action);
     } else if (item.Actions[CanvasActions.DrawText]) {
       item.FontOptions = item.FontOptions ?? { font: '0px Arial', textBaseline: 'middle', textAlign: 'center' } as CanvasTextDrawingStyles;
@@ -281,7 +276,6 @@ export class CanvasService {
       }
       let fonstStyle: string = item.FontOptions.font.split(' ')[1];
       item.FontOptions.font = fontSize + "px " + fonstStyle;
-      console.log(fontSize)
       this.createAction(item, action);
     } else {
 
@@ -330,7 +324,6 @@ export class CanvasService {
         this.removeAction(this.selectedItem, CanvasActions.Move);
         let isInPath = this.isPointInPath(this.selectedItem, event);
         if (!isInPath.isInXAxis && !isInPath.isInYAxis) {
-          console.log(1)
           this.selectedItem = undefined;
           this.resetContext();
           this.renderItems();
@@ -464,7 +457,6 @@ export class CanvasService {
     }
     item.Dx = item.Dx ?? 0;
     item.Dy = item.Dy ?? 0
-    console.log(item.Dx, item.Dy)
     this.canvasContext.drawImage(item.Image, item.Dx, item.Dy, item.Width, item.Height);
     item.GlobalCompositeOperation = this.canvasContext.globalCompositeOperation;
     item.Type = CanvasActions.DrawImage;
@@ -535,7 +527,6 @@ export class CanvasService {
   }
 
   private drawSelect(item: ICanvasItem) {
-    console.log("draw select")
     this.canvasContext.save()
     this.canvasContext.setTransform(item.RotateTransformMatrix);
     this.canvasContext.strokeStyle = "#0d6efd";
@@ -605,9 +596,7 @@ export class CanvasService {
   }
 
   validateAction(item: ICanvasItem, action: CanvasActions): boolean {
-    let textAction = CanvasActions[action]
     if (item?.Actions[action]) {
-      console.log(textAction);
       if (item.Actions[action].IsPainted === undefined) {
         console.trace()
         throw (new Error("IsPainted is required"));
@@ -658,7 +647,6 @@ export class CanvasService {
 
   renderItem(item: ICanvasItem) {
     this.switchContext(item.Context);
-    console.log(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
 
     if (this.validateAction(item, CanvasActions.Align)) {
       this.align(item, item.Actions[CanvasActions.Align].Value as Arrows);
@@ -694,10 +682,6 @@ export class CanvasService {
     if (item.Id == this.selectedItem?.Id) {
       this.drawSelect(item);
     }
-    console.log(item);
-    console.log("\n" + CanvasActions[item.Type] + " " + item.Id + " => " + this.count +
-      "\n<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<\n")
-    this.count++;
     if (item.Context == Context.Action) this.toDisplayContext(item);
   }
 
