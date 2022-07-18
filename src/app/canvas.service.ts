@@ -328,13 +328,33 @@ export class CanvasService {
       if (this.selectedItem) {
         this.removeAction(this.selectedItem, CanvasActions.Align);
         this.removeAction(this.selectedItem, CanvasActions.Move);
+        let isInPath = this.isPointInPath(this.selectedItem, event);
+        if (!isInPath.isInXAxis && !isInPath.isInYAxis) {
+          console.log(1)
+          this.selectedItem = undefined;
+          this.resetContext();
+          this.renderItems();
+        }
       }
     });
 
     this.canvasContext.canvas.addEventListener('mouseup', (event: any) => {
       event.stopPropagation();
       moveItem = false;
+      let pos = this.getCursorPosition(event)
+      let imgData = this.canvasContext.getImageData(pos.x, pos.y, 1, 1);
+      let filterItems = this.items.filter(x => x.IsVisible && x.Id != this?.selectedItem?.Id);
+
+      filterItems.sort((a, b) => (a.LayerIndex < b.LayerIndex) ? 1 : -1).every(x => {
+        let isInPath = this.isPointInPath(x, event);
+        if (x.Id != this?.selectedItem?.Id && isInPath.isInXAxis && isInPath.isInYAxis) {
+          this.selectItem(x);
+          return false;
+        }
+        return true;
+      });
     });
+
     this.canvasContext.canvas.addEventListener('mouseleave', (event: any) => {
       event.stopPropagation();
       moveItem = false;
@@ -358,27 +378,7 @@ export class CanvasService {
       }
     });
 
-    this.canvasContext.canvas.addEventListener('click', (event: any) => {
-      let pos = this.getCursorPosition(event)
-      let imgData = this.canvasContext.getImageData(pos.x, pos.y, 1, 1);
-      let filterItems = this.items.filter(x => x.IsVisible && x.Id != this?.selectedItem?.Id);
 
-      let isNoSelect = filterItems.sort((a, b) => (a.LayerIndex < b.LayerIndex) ? 1 : -1).every(x => {
-        let isInPath = this.isPointInPath(x, event);
-        if (x.Id != this?.selectedItem?.Id && isInPath.isInXAxis && isInPath.isInYAxis) {
-          this.selectItem(x);
-          return false;
-        }
-        return true;
-      });
-
-      if (isNoSelect && this.selectedItem) {
-        this.selectedItem = undefined;
-        this.resetContext();
-        this.renderItems();
-      }
-
-    });
   }
 
   setCanvasActionContext(canvasActionContext: CanvasRenderingContext2D) { this.canvasActionContext = canvasActionContext; }
