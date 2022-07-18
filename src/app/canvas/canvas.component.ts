@@ -24,7 +24,25 @@ export class CanvasComponent implements AfterViewInit {
   rotateStep: number = 5;
   canvasHeight: number = 500;
   canvasWidth: number = 250;
+  selectedFiles?: FileList;
+  currentFile?: File;
 
+  selectFile(event: any): void {
+    this.selectedFiles = event.target.files;
+  }
+
+  loadFile(): void {
+    if (this.selectedFiles) {
+      const file: File | null = this.selectedFiles.item(0);
+      if (file) {
+        this.currentFile = file;
+        this.canvasService.loadFile(this.currentFile).then(() => {
+          this.canvasService.renderItems();
+        });
+      }
+      this.selectedFiles = undefined;
+    }
+  }
 
   public get enableEditor(): boolean {
     return this.selectedItem?.Type != undefined && this.selectedItem.IsVisible;
@@ -41,6 +59,10 @@ export class CanvasComponent implements AfterViewInit {
   }
   public get selectedItem(): ICanvasItem {
     return this.canvasService?.selectedItem ?? {} as ICanvasItem;
+  }
+
+  public get actions(): typeof CanvasActions {
+    return CanvasActions;
   }
 
   public get direction(): typeof Arrows {
@@ -160,7 +182,7 @@ export class CanvasComponent implements AfterViewInit {
   }
 
   actionToViewModel(x: ICanvasAction): ICanvasAction {
-    if(!x) return {} as ICanvasAction;
+    if (!x) return {} as ICanvasAction;
     return {
       Value: x.Value.length > 25 ? x.Value.substring(0, 25) : x.Value,
       CurrentValue: x?.CurrentValue?.length > 25 ? x?.CurrentValue?.substring(0, 25) : x?.CurrentValue,

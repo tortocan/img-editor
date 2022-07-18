@@ -45,11 +45,23 @@
                                         [ngClass]="{'bi bi-eye-fill': item.IsVisible,'bi bi-eye-slash': !item.IsVisible}"></span>
                                 </button>
 
-                                <img class="img-fluid img-thumbnail galery-thumbnail" src="{{item.Url}}">
+                                <img class="img-fluid img-thumbnail galery-thumbnail" *ngIf="item.Actions[actions.DrawImage]" src="{{item.Actions[actions.DrawImage].Value}}">
 
                                 {{item.Type}}
                                 {{item?.Url ?? item.Actions[item.Type]?.Value ?? ''}}
                             </div>
+                            <div class="row">
+                                <div class="col-8">
+                                  <label class="btn btn-default p-0">
+                                    <input type="file" (change)="selectFile($event)" />
+                                  </label>
+                                </div>
+                                <div class="col-4">
+                                  <button class="btn btn-success btn-sm" [disabled]="!selectedFiles" (click)="loadFile()">
+                                    Upload
+                                  </button>
+                                </div>
+                              </div>
                         </div>
                     </div>
                     <div class="row" *ngIf="enableEditor">

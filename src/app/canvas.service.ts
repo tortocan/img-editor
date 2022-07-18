@@ -376,19 +376,43 @@ export class CanvasService {
 
   setCanvasActionContext(canvasActionContext: CanvasRenderingContext2D) { this.canvasActionContext = canvasActionContext; }
 
-  getImageFromUrl(img: ICanvasItem): Promise<ICanvasItem> {
+  getImageFromUrl(item: ICanvasItem): Promise<ICanvasItem> {
     return new Promise<ICanvasItem>((resolve) => {
-      this.getBlobImage(img.Url).subscribe((blob) => {
+      this.getBlobImage(item.Url).subscribe((blob) => {
         const reader = new FileReader();
         reader.readAsDataURL(blob);
         reader.onloadend = () => {
-          img.Actions[CanvasActions.DrawImage].Value = reader.result?.toString() ?? '';
-          this.loadImage(img).then(() => {
-            this.pushItem(img);
-            resolve(img);
+          item.Actions[CanvasActions.DrawImage].Value = reader.result?.toString() ?? '';
+          this.loadImage(item).then(() => {
+            this.pushItem(item);
+            resolve(item);
           });
         }
       });
+    })
+  }
+
+  loadFile(file: File): Promise<ICanvasItem> {
+    let layerIndexes  = this.items.filter(x=>x.LayerIndex < 900).map(x=>x.LayerIndex);
+    return new Promise<ICanvasItem>((resolve) => { let item = {
+      LayerIndex: Math.max(...layerIndexes) + 1,
+      Context: Context.Display,
+      IsVisible: true
+    } as ICanvasItem
+    item.Actions = [];
+    item.Actions[CanvasActions.DrawImage] = {
+      IsPainted: false
+    } as ICanvasAction
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onloadend = () => {
+        item.Actions[CanvasActions.DrawImage].Value = reader.result?.toString() ?? '';
+        this.loadImage(item).then(() => {
+          item.Url = "assets/" + file.name;
+          this.pushItem(item);
+          resolve(item);
+        });
+      }
     })
   }
 
