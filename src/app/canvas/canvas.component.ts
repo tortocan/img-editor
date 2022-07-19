@@ -49,11 +49,9 @@ export class CanvasComponent implements AfterViewInit {
 
 
   changeFont(font: FontInterface) {
-    font.size = this.selectedItem.Height + "px";
     this.selectedItem.FontOptions.font = this.selectedItem.Height + "px " + font.family
     this.canvasService.resetContext();
     this.canvasService.renderItems();
-
   }
 
   selectFile(event: any): void {
@@ -171,8 +169,6 @@ export class CanvasComponent implements AfterViewInit {
 
   selectItem(item: ICanvasItem) {
     this.canvasService.selectItem(item);
-    this.font.family = item.FontOptions.font;
-    this.font.size = item.Height + 'px';
   }
 
   save() {
