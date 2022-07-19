@@ -1,6 +1,8 @@
 import { AfterViewInit, Component, ElementRef, ViewChild } from '@angular/core';
+import { Font, FontInterface, FontPickerService } from 'ngx-font-picker';
 import { Arrows } from '../arrows/arrows.component';
 import { CanvasActions, CanvasService, Context, ICanvasAction, ICanvasItem, ICanvasItemViewModel } from '../canvas.service';
+import * as WebFont from 'webfontloader';
 
 @Component({
   selector: 'app-canvas',
@@ -16,7 +18,7 @@ export class CanvasComponent implements AfterViewInit {
   public context: CanvasRenderingContext2D = {} as CanvasRenderingContext2D;
   public contextAction: CanvasRenderingContext2D = {} as CanvasRenderingContext2D;
 
-  constructor(private canvasService: CanvasService) { }
+  constructor(private canvasService: CanvasService, private fontPickerService: FontPickerService) { }
   items: ICanvasItem[] = [];
   resizeStep: number = 10;
   zoomPercentage: number = 0;
@@ -26,6 +28,33 @@ export class CanvasComponent implements AfterViewInit {
   canvasWidth: number = 250;
   selectedFiles?: FileList;
   currentFile?: File;
+  font: FontInterface = new Font({
+    family: 'Roboto',
+    size: '140px',
+    style: 'regular',
+    styles: ['regular']
+  }) as FontInterface;
+  public sizeSelect: boolean = false;
+  public styleSelect: boolean = false;
+  private _presetFonts = ['Arial', 'Times', 'Courier', 'Lato', 'Open Sans', 'Roboto Slab'];
+  public presetFonts = this._presetFonts;
+
+
+  changeText(event: any) {
+    event.stopPropagation();
+    this.selectedItem.Actions[CanvasActions.DrawText].Value = event.target.value;
+    this.canvasService.resetContext();
+    this.canvasService.renderItems();
+  }
+
+
+  changeFont(font: FontInterface) {
+    font.size = this.selectedItem.Height + "px";
+    this.selectedItem.FontOptions.font = this.selectedItem.Height + "px " + font.family
+    this.canvasService.resetContext();
+    this.canvasService.renderItems();
+
+  }
 
   selectFile(event: any): void {
     this.selectedFiles = event.target.files;
@@ -142,6 +171,8 @@ export class CanvasComponent implements AfterViewInit {
 
   selectItem(item: ICanvasItem) {
     this.canvasService.selectItem(item);
+    this.font.family = item.FontOptions.font;
+    this.font.size = item.Height + 'px';
   }
 
   save() {

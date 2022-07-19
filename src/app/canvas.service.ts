@@ -511,7 +511,7 @@ export class CanvasService {
     this.canvasContext.setTransform(item.RotateTransformMatrix);
     item.Dx = item.Dx ?? this.canvasContext.canvas.width / 2;
     item.Dy = item.Dy ?? this.canvasContext.canvas.height / 2;
-    item.FontOptions = item.FontOptions ?? { font: '30px Arial', textBaseline: 'middle', textAlign: 'center' } as CanvasTextDrawingStyles;
+    item.FontOptions = item.FontOptions ?? { font: 'Italic 30px Arial', textBaseline: 'middle', textAlign: 'center' } as CanvasTextDrawingStyles;
     item.GlobalCompositeOperation = this.canvasContext.globalCompositeOperation;
 
     this.fiilText(item)

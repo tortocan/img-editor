@@ -1,5 +1,7 @@
 @import "~bootstrap/dist/css/bootstrap.css";
 @import "~bootstrap-icons/font/bootstrap-icons.scss";
+@import "~bootstrap/scss/functions";
+@import "~bootstrap/scss/variables";
 
 .bi-plus-circle:hover {
     @extend .bi-plus-circle-fill;
@@ -10,3 +12,17 @@
     @extend .bi-dash-circle-fill;
     cursor: pointer;
 }
+
+
+.font-picker {
+    z-index: 2000 !important;
+}
+
+
+.color-picker {
+    border: $primary solid 1px !important;
+    z-index: 1000 !important;
+    .cursor {
+        border: $primary solid 2px !important;
+    }
+ }

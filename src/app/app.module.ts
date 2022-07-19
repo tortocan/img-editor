@@ -9,6 +9,15 @@ import { RangeComponent } from './range/range.component';
 import { ArrowsComponent } from './arrows/arrows.component';
 import { ColorPickerComponent } from './color-picker/color-picker.component';
 import { ColorPickerModule } from 'ngx-color-picker';
+import { FontPickerModule } from 'ngx-font-picker';
+import { FONT_PICKER_CONFIG } from 'ngx-font-picker';
+import { FontPickerConfigInterface } from 'ngx-font-picker';
+
+const DEFAULT_FONT_PICKER_CONFIG: FontPickerConfigInterface = {
+  // Change this to your Google API key
+  apiKey: 'AIzaSyAN2vx-YXH754r6pkumEjmii7OCZcCOMkQ'
+};
+
 
 @NgModule({
   declarations: [
@@ -16,15 +25,19 @@ import { ColorPickerModule } from 'ngx-color-picker';
     CanvasComponent,
     RangeComponent,
     ArrowsComponent,
-    ColorPickerComponent
+    ColorPickerComponent,
   ],
   imports: [
     BrowserModule,
     AppRoutingModule,
     HttpClientModule,
-    ColorPickerModule
+    ColorPickerModule,
+    FontPickerModule
   ],
-  providers: [],
+  providers: [{
+    provide: FONT_PICKER_CONFIG,
+    useValue: DEFAULT_FONT_PICKER_CONFIG
+  }],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

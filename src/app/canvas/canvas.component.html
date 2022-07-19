@@ -7,8 +7,9 @@
         <div class="col-6 align-self-start">
             <ul class="nav nav-tabs" id="myTab" role="tablist">
                 <li class="nav-item" role="presentation">
-                    <button class="nav-link" id="select-preview-tab" data-bs-toggle="tab" data-bs-target="#select-preview" type="button"
-                        role="tab" aria-controls="select-preview" aria-selected="false">
+                    <button class="nav-link" id="select-preview-tab" data-bs-toggle="tab"
+                        data-bs-target="#select-preview" type="button" role="tab" aria-controls="select-preview"
+                        aria-selected="false">
                         Preview
                     </button>
                 </li>
@@ -45,42 +46,76 @@
                                         [ngClass]="{'bi bi-eye-fill': item.IsVisible,'bi bi-eye-slash': !item.IsVisible}"></span>
                                 </button>
 
-                                <img class="img-fluid img-thumbnail galery-thumbnail" *ngIf="item.Actions[actions.DrawImage]" src="{{item.Actions[actions.DrawImage].Value}}">
+                                <img class="img-fluid img-thumbnail galery-thumbnail"
+                                    *ngIf="item.Actions[actions.DrawImage]"
+                                    src="{{item.Actions[actions.DrawImage].Value}}">
 
                                 {{item.Type}}
                                 {{item?.Url ?? item.Actions[item.Type]?.Value ?? ''}}
                             </div>
                             <div class="row">
                                 <div class="col-8">
-                                  <label class="btn btn-default p-0">
-                                    <input type="file" (change)="selectFile($event)" />
-                                  </label>
+                                    <label class="btn btn-default p-0">
+                                        <input type="file" (change)="selectFile($event)" />
+                                    </label>
                                 </div>
                                 <div class="col-4">
-                                  <button class="btn btn-success btn-sm" [disabled]="!selectedFiles" (click)="loadFile()">
-                                    Upload
-                                  </button>
+                                    <button class="btn btn-success btn-sm" [disabled]="!selectedFiles"
+                                        (click)="loadFile()">
+                                        Upload
+                                    </button>
                                 </div>
-                              </div>
+                            </div>
                         </div>
                     </div>
                     <div class="row" *ngIf="enableEditor">
+
+                        <div class="col-3" *ngIf="selectedItem.Actions[actions.DrawText]">
+                            <label for="text" class="form-label">
+                                <span class="badge rounded-pill bg-primary p-1 mx-1">Text</span>
+                            </label>
+                            <div class="input-group">
+                                <textarea  id="text" class="form-control" (keyup)="changeText($event)" >{{selectedItem.Actions[actions.DrawText].Value}}</textarea>
+                            </div>
+
+                            <label for="font" class="form-label">
+                                <span class="badge rounded-pill bg-primary p-1 mx-1">Font</span>
+                            </label>
+                            <div id="font" class="action-button font-picker-container" fxLayout="column"
+                                fxLayoutAlign="center center" fxFlex [(fontPicker)]="font" [fpWidth]="'auto'"
+                                [fpPosition]="'bottom'" [fpPositionOffset]="'0%'" [fpPositionRelativeToArrow]="false"
+                                [fpPresetLabel]="'Preset fonts'" [fpPresetFonts]="presetFonts"
+                                [fpSizeSelect]="sizeSelect" [fpStyleSelect]="styleSelect"
+                                (fontPickerChange)="changeFont($event)">
+
+                                <input type="select" class="form-select form-select-lg mb-3" aria-label=".form-select-lg example" placeholder="{{font?.family}} {{font?.style ?? '' | FontStyles}}">
+
+                            </div>
+
+                            <label for="font-color" class="form-label">
+                                <span class="badge rounded-pill bg-primary p-1 mx-1">Font Color</span>
+                            </label>
+                            <app-color-picker id="font-color"
+                                [selectedColor]="selectedItem.Color" (onColorChange)="changeTextColor($event)">
+                            </app-color-picker>
+                        </div>
+
                         <div class="col d-flex align-items-center justify-content-center">
-                            <app-color-picker *ngIf="selectedItem.Actions[actions.DrawText]" [selectedColor]="selectedItem.Color" (onColorChange)="changeTextColor($event)" ></app-color-picker>
+
+
                             <app-arrows [title]="'Align'" (onClick)="align($event)"></app-arrows>
                             <app-arrows [title]="'Move'" (onClick)="move($event)" [disable]="[direction.Center]">
                             </app-arrows>
-                        </div>
-                    </div>
-                    <div class="row" *ngIf="enableEditor">
-                        <div class="col d-flex align-items-center justify-content-center">
-                            <div class="input-group mb-3 w-50">
-                                <app-range [title]="'Rotate'" [value]="angle"  [labelValue]="angle.toString()+'°'" [step]="rotateStep"
-                                    (onChange)="rotate($event)">
+
+                            <div class="input-group mb-3">
+                                <app-range [title]="'Rotate'" [value]="angle" [labelValue]="angle.toString()+'°'"
+                                    [step]="rotateStep" (onChange)="rotate($event)">
                                 </app-range>
-                                <app-range [title]="'Resize'" [value]="resizePercentage"  [labelValue]="'width:' + (selectedItem.Width | number: '1.0-0') + 'px height:' + (selectedItem.Height | number: '1.0-0') +'px' " [step]="rotateStep"
-                                    (onChange)="resize($event)"></app-range>
-                                <app-range [title]="'Zoom'" [value]="zoomPercentage"  [labelValue]="zoomPercentage.toString()" (onChange)="zoom($event)">
+                                <app-range [title]="'Resize'" [value]="resizePercentage"
+                                    [labelValue]="'width:' + (selectedItem.Width | number: '1.0-0') + 'px height:' + (selectedItem.Height | number: '1.0-0') +'px' "
+                                    [step]="rotateStep" (onChange)="resize($event)"></app-range>
+                                <app-range [title]="'Zoom'" [value]="zoomPercentage"
+                                    [labelValue]="zoomPercentage.toString()" (onChange)="zoom($event)">
                                 </app-range>
                             </div>
                         </div>
