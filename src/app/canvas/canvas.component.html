@@ -75,7 +75,7 @@
                                 <span class="badge rounded-pill bg-primary p-1 mx-1">Text</span>
                             </label>
                             <div class="input-group">
-                                <textarea  id="text" class="form-control" (keyup)="changeText($event)" >{{selectedItem.Actions[actions.DrawText].Value}}</textarea>
+                                <textarea  id="text" class="form-control" (keyup)="changeText($event)" [ngStyle]="{'font-family': font?.family}">{{selectedItem.Actions[actions.DrawText].Value}}</textarea>
                             </div>
 
                             <label for="font" class="form-label">
@@ -88,7 +88,7 @@
                                 [fpSizeSelect]="sizeSelect" [fpStyleSelect]="styleSelect"
                                 (fontPickerChange)="changeFont($event)">
 
-                                <input type="submit" class="form-select form-select-lg mb-3" aria-label=".form-select-lg example" value="{{font?.family}}">
+                                <input type="submit" class="form-select form-select-lg mb-3" aria-label=".form-select-lg example" value="{{font?.family}}" [ngStyle]="{'font-family': font?.family}">
 
                             </div>
 
