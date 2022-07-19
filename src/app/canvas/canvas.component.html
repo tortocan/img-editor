@@ -66,6 +66,7 @@
                     </div>
                     <div class="row" *ngIf="enableEditor">
                         <div class="col d-flex align-items-center justify-content-center">
+                            <app-color-picker *ngIf="selectedItem.Actions[actions.DrawText]" [selectedColor]="selectedItem.Color" (onColorChange)="changeTextColor($event)" ></app-color-picker>
                             <app-arrows [title]="'Align'" (onClick)="align($event)"></app-arrows>
                             <app-arrows [title]="'Move'" (onClick)="move($event)" [disable]="[direction.Center]">
                             </app-arrows>

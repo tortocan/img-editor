@@ -73,6 +73,12 @@ export class CanvasComponent implements AfterViewInit {
     return Arrows;
   }
 
+  changeTextColor(color: any) {
+    this.selectedItem.Color = color;
+    this.canvasService.resetContext();
+    this.canvasService.renderItems();
+  }
+
   white2transparent() {
     if (this.canvasService.selectedItem) {
       this.canvasService.white2transparent(this.canvasService.selectedItem);
@@ -203,6 +209,7 @@ export class CanvasComponent implements AfterViewInit {
     return {
       IsVisible: item.IsVisible,
       Type: CanvasActions[item.Type],
+      Color: item?.Color,
       Dx: item?.Dx,
       Dy: item?.Dy,
       LayerIndex: item?.LayerIndex,

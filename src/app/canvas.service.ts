@@ -21,7 +21,8 @@ export interface ICanvasItem {
   Id: string,
   Actions: ICanvasAction[],
   Context: Context,
-  IsVisible: boolean
+  IsVisible: boolean,
+  Color:any
 }
 export enum CanvasActions {
   NewItem,
@@ -521,6 +522,8 @@ export class CanvasService {
     this.canvasContext.font = item.FontOptions.font;
     this.canvasContext.textBaseline = item.FontOptions.textBaseline;
     this.canvasContext.textAlign = item.FontOptions.textAlign;
+    item.Color = item.Color ?? this.canvasContext.fillStyle ?? 'black';
+    this.canvasContext.fillStyle = item.Color;
     item.Height = +item.FontOptions.font.split('px')[0];
     item.Width = this.canvasContext.measureText(item.Actions[CanvasActions.DrawText].Value).width
     let txt = item.Actions[CanvasActions.DrawText].Value;
