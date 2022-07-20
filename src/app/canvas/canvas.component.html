@@ -70,36 +70,8 @@
                     </div>
                     <div class="row" *ngIf="enableEditor">
 
-                        <div class="col-3" *ngIf="selectedItem.Actions[actions.DrawText]">
-                            <label for="text" class="form-label">
-                                <span class="badge rounded-pill bg-primary p-1 mx-1">Text</span>
-                            </label>
-                            <div class="input-group">
-                                <textarea  id="text" class="form-control" (keyup)="changeText($event)" [ngStyle]="{'font-family': font?.family}">{{selectedItem.Actions[actions.DrawText].Value}}</textarea>
-                            </div>
 
-                            <label for="font" class="form-label">
-                                <span class="badge rounded-pill bg-primary p-1 mx-1">Font</span>
-                            </label>
-                            <div id="font" class="action-button font-picker-container" fxLayout="column"
-                                fxLayoutAlign="center center" fxFlex [(fontPicker)]="font" [fpWidth]="'auto'"
-                                [fpPosition]="'bottom'" [fpPositionOffset]="'0%'" [fpPositionRelativeToArrow]="false"
-                                [fpPresetLabel]="'Preset fonts'" [fpPresetFonts]="presetFonts"
-                                [fpSizeSelect]="sizeSelect" [fpStyleSelect]="styleSelect"
-                                (fontPickerChange)="changeFont($event)">
-
-                                <input type="submit" class="form-select form-select-lg mb-3" aria-label=".form-select-lg example" value="{{font?.family}}" [ngStyle]="{'font-family': font?.family}">
-
-                            </div>
-
-                            <label for="font-color" class="form-label">
-                                <span class="badge rounded-pill bg-primary p-1 mx-1">Font Color</span>
-                            </label>
-                            <app-color-picker id="font-color"
-                                [selectedColor]="selectedItem.Color" (onColorChange)="changeTextColor($event)">
-                            </app-color-picker>
-                        </div>
-
+                        <app-font-editor></app-font-editor>
                         <div class="col d-flex align-items-center justify-content-center">
 
 

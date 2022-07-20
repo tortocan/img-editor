@@ -12,6 +12,7 @@ import { ColorPickerModule } from 'ngx-color-picker';
 import { FontPickerModule } from 'ngx-font-picker';
 import { FONT_PICKER_CONFIG } from 'ngx-font-picker';
 import { FontPickerConfigInterface } from 'ngx-font-picker';
+import { FontEditorComponent } from './font-editor/font-editor.component';
 
 const DEFAULT_FONT_PICKER_CONFIG: FontPickerConfigInterface = {
   // Change this to your Google API key
@@ -26,6 +27,7 @@ const DEFAULT_FONT_PICKER_CONFIG: FontPickerConfigInterface = {
     RangeComponent,
     ArrowsComponent,
     ColorPickerComponent,
+    FontEditorComponent,
   ],
   imports: [
     BrowserModule,
