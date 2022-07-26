@@ -271,9 +271,8 @@ export class CanvasComponent implements AfterViewInit {
     } as ICanvasAction
     mask.Actions[CanvasActions.MaskColor] = {
       IsPainted: false,
-      Value: { sr: 255, sb: 255, sg: 255,overflow: true, dr: 255, dg: 255, db: 255, da: 255 } as rgb2rgba
+      Value: { sa: 255, dr: 255, dg: 255, db: 255, da: 255 } as rgb2rgba
     } as ICanvasAction
-
 
     let draw = {
       Url: "assets/draw.jpg",
@@ -286,10 +285,9 @@ export class CanvasComponent implements AfterViewInit {
     draw.Actions[CanvasActions.DrawImage] = {
       IsPainted: false
     } as ICanvasAction
-
     draw.Actions[CanvasActions.Align] = {
       IsPainted: true,
-      Value: Arrows.TopRight
+      Value: Arrows.Center
     } as ICanvasAction
 
     let text = {
@@ -322,8 +320,8 @@ export class CanvasComponent implements AfterViewInit {
     ]
 
     Promise.all(imagesTasks).then(() => {
-      this.context.canvas.width = phone.Image.width;
-      this.context.canvas.height = phone.Image.height;
+      this.context.canvas.width = phone.Image.width * 1.25;
+      this.context.canvas.height = phone.Image.height * 1.25;
       this.canvasService.removeItem(loading.Id)
       this.items = this.canvasService.getSortedItems();
       this.canvasService.renderItems();

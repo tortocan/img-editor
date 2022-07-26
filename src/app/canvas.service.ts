@@ -72,10 +72,7 @@ export enum rgba {
 }
 
 export interface rgb2rgba {
-  overflow: boolean,
-  sr: number,
-  sg: number,
-  sb: number,
+  sa: number,
   dr: number,
   dg: number,
   db: number,
@@ -660,6 +657,7 @@ export class CanvasService {
 
 
   switchContext(context: Context) {
+    return;
     switch (context) {
       case Context.Action:
         this.canvasContext = this.canvasActionContext;
@@ -675,36 +673,34 @@ export class CanvasService {
       this.drawText(item);
       return;
     }
-
-    let imageData = this.canvasContext.getImageData(0, 0, this.canvasContext.canvas.width, this.canvasContext.canvas.height);
-    let pixelData = imageData.data;
+    let cw = this.canvasContext.canvas.width;
+    let ch = this.canvasContext.canvas.height;
+    let srcIgm = this.canvasContext.getImageData(0, 0, cw, ch);
+    this.canvasContext.canvas.width = cw;
+    this.canvasContext.canvas.height = ch;
+    this.drawImage(item);
+    let destImg = this.canvasContext.getImageData(0, 0, cw, ch);
     let rgb2rgba = item.Actions[CanvasActions.MaskColor].Value as rgb2rgba;
 
-    for (let x = 0, w = this.canvasContext.canvas.width; x < w; ++x) {
-      for (let y = 0, h = this.canvasContext.canvas.height; y < h; ++y) {
+    for (let x = 0, w = cw; x < w; ++x) {
+      for (let y = 0, h = ch; y < h; ++y) {
         let pixel = (y * w + x) * 4;
-        if (rgb2rgba.overflow && y <= item.Dy
-          || rgb2rgba.overflow && y >= item.Dy + item.Height - 5
-          || rgb2rgba.overflow && x <= item.Dx
-          || rgb2rgba.overflow && x >= item.Dx + item.Width - 5
-          || pixelData[pixel + rgba.Red] >= rgb2rgba.sr
-          && pixelData[pixel + rgba.Green] >= rgb2rgba.sg
-          && pixelData[pixel + rgba.Blue] >= rgb2rgba.sb) {
-          pixelData[pixel + rgba.Red] = rgb2rgba.dr ?? pixelData[pixel + rgba.Red]
-          pixelData[pixel + rgba.Blue] = rgb2rgba.db ?? pixelData[pixel + rgba.Blue]
-          pixelData[pixel + rgba.Green] = rgb2rgba.dg ?? pixelData[pixel + rgba.Green]
-          pixelData[pixel + rgba.Alpha] = rgb2rgba.da ?? pixelData[pixel + rgba.Alpha];
+        if (destImg.data[pixel + rgba.Alpha] == 0) {
+          let transparent = y <= item.Dy || y >= item.Dy + item.Height || x <= item.Dx || x >= item.Dx + item.Width;
+          destImg.data[pixel + rgba.Red] =  transparent ? rgb2rgba.dr : srcIgm.data[pixel + rgba.Red];
+          destImg.data[pixel + rgba.Green] = transparent ? rgb2rgba.dg : srcIgm.data[pixel + rgba.Green];
+          destImg.data[pixel + rgba.Blue] = transparent ? rgb2rgba.db : srcIgm.data[pixel + rgba.Blue];
+          destImg.data[pixel + rgba.Alpha] = transparent ? rgb2rgba.da : srcIgm.data[pixel + rgba.Alpha];
+        } else {
+          destImg.data[pixel + rgba.Alpha] = rgb2rgba.sa
         }
       }
     }
-    this.canvasContext.putImageData(imageData, 0, 0);
+    this.canvasContext.putImageData(destImg, 0, 0);
     this.createAction(item, CanvasActions.MaskColor);
   }
 
   renderItem(item: ICanvasItem) {
-    this.switchContext(item.Context);
-
-
     if (this.validateAction(item, CanvasActions.Align)) {
       this.align(item, item.Actions[CanvasActions.Align].Value as Arrows);
       item.Actions[CanvasActions.Align].IsRendered = true;
@@ -744,7 +740,6 @@ export class CanvasService {
     if (item.IsSelectable && item.Id == this.selectedItem?.Id) {
       this.drawSelect(item);
     }
-    if (item.Context == Context.Action) this.toDisplayContext(item);
   }
 
 }
