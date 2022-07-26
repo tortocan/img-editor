@@ -16,12 +16,13 @@ export interface ICanvasItem {
   Dx: number
   Dy: number,
   LayerIndex: number,
-  GlobalCompositeOperation: string,
+  GlobalCompositeOperation: GlobalCompositeOperation,
   FontOptions: CanvasTextDrawingStyles,
   Id: string,
   Actions: ICanvasAction[],
   Context: Context,
   IsVisible: boolean,
+  IsSelectable: boolean,
   Color:any
 }
 export enum CanvasActions {
@@ -31,7 +32,8 @@ export enum CanvasActions {
   Rotate,
   Resize,
   Move,
-  Align
+  Align,
+  MaskColor
 }
 export enum Context {
   Action,
@@ -75,8 +77,10 @@ class Guid {
   providedIn: 'root'
 })
 export class CanvasService {
+
   selectedItem?: ICanvasItem;
   count: number = 0;
+
   clearContext() {
     this.canvasContext.clearRect(0, 0, this.canvasContext.canvas.width, this.canvasContext.canvas.height)
   }
@@ -337,7 +341,7 @@ export class CanvasService {
       moveItem = false;
       let pos = this.getCursorPosition(event)
       let imgData = this.canvasContext.getImageData(pos.x, pos.y, 1, 1);
-      let filterItems = this.items.filter(x => x.IsVisible && x.Id != this?.selectedItem?.Id);
+      let filterItems = this.items.filter(x =>  x.IsSelectable && x.IsVisible && x.Id != this?.selectedItem?.Id);
 
       filterItems.sort((a, b) => (a.LayerIndex < b.LayerIndex) ? 1 : -1).every(x => {
         let isInPath = this.isPointInPath(x, event);
@@ -481,7 +485,10 @@ export class CanvasService {
       item.OriginalHeight = item.Image.height;
     }
     item.Dx = item.Dx ?? 0;
-    item.Dy = item.Dy ?? 0
+    item.Dy = item.Dy ?? 0;
+    this.canvasContext.globalCompositeOperation = item.GlobalCompositeOperation ?? this.canvasContext.globalCompositeOperation;
+    console.log(this.canvasActionContext.globalCompositeOperation)
+    console.log(item.GlobalCompositeOperation)
     this.canvasContext.drawImage(item.Image, item.Dx, item.Dy, item.Width, item.Height);
     item.GlobalCompositeOperation = this.canvasContext.globalCompositeOperation;
     item.Type = CanvasActions.DrawImage;
@@ -541,7 +548,7 @@ export class CanvasService {
 
   selectItem(item: ICanvasItem) {
 
-    if (this.selectedItem && this.selectedItem?.Id == item.Id) {
+    if ( !item.IsSelectable || this.selectedItem && this.selectedItem?.Id == item.Id) {
       return;
     }
 
@@ -554,6 +561,7 @@ export class CanvasService {
   }
 
   private drawSelect(item: ICanvasItem) {
+
     this.canvasContext.save()
     this.canvasContext.setTransform(item.RotateTransformMatrix);
     this.canvasContext.strokeStyle = "#0d6efd";
@@ -646,34 +654,41 @@ export class CanvasService {
     }
   }
 
-  white2transparent(item: ICanvasItem) {
+  maskColor(item: ICanvasItem) {
     if (item.Type == CanvasActions.DrawText) {
       this.drawText(item);
       return;
     }
-    let ctx = this.canvasContext;
-    let canvas = ctx.canvas;
-    let img = item.Image;
-    let w = img.width, h = img.height;
-    canvas.width = w;
-    canvas.height = h;
-    ctx.drawImage(img, 0, 0, w, h);
-    let imageData = ctx.getImageData(0, 0, w, h);
+
+    let imageData =  this.canvasContext.getImageData(0,0,this.canvasContext.canvas.width,this.canvasContext.canvas.height);
     let pixel = imageData.data;
     let red = 0, green = 1, blue = 2, alpha = 3;
-    for (let p = 0; p <= pixel.length; p += 4) {
-      if (pixel[p + red] >= 255
-        && pixel[p + green] >= 255
-        && pixel[p + blue] >= 255) // if white then change alpha to 0
-      {
-        pixel[p + alpha] = 0;
+    let rgba  = item.Actions[CanvasActions.MaskColor].Value;
+    let maskOverflow = rgba[4] ;
+    for(let x = 0, w = this.canvasContext.canvas.width; x < w; ++x) {
+      for(let y = 0, h = this.canvasContext.canvas.height; y < h; ++y) {
+        let p = (y * w + x) * 4;
+        if ( pixel[p + alpha] == 0
+          || maskOverflow && y <= item.Dy
+          || maskOverflow && y >= item.Dy + item.Height
+          || maskOverflow && x <= item.Dx
+          || maskOverflow && x >= item.Dx + item.Width
+          || pixel[p + red] >= rgba[red]
+           && pixel[p + green] >= rgba[green]
+           && pixel[p + blue] >= rgba[blue])
+         {
+          pixel[p + alpha] = rgba[alpha];
+         }
       }
     }
-    ctx.putImageData(imageData, 0, 0);
+
+    this.canvasContext.putImageData(imageData,0,0);
+    this.createAction(item,CanvasActions.MaskColor);
   }
 
   renderItem(item: ICanvasItem) {
     this.switchContext(item.Context);
+
 
     if (this.validateAction(item, CanvasActions.Align)) {
       this.align(item, item.Actions[CanvasActions.Align].Value as Arrows);
@@ -701,12 +716,17 @@ export class CanvasService {
       item.Actions[CanvasActions.DrawImage].IsRendered = true;
     }
 
+    if (this.validateAction(item, CanvasActions.MaskColor)) {
+      this.maskColor(item)
+      item.Actions[CanvasActions.MaskColor].IsRendered = true;
+    }
+
     if (this.validateAction(item, CanvasActions.DrawText)) {
       this.drawText(item);
       item.Actions[CanvasActions.DrawText].IsRendered = true;
     }
 
-    if (item.Id == this.selectedItem?.Id) {
+    if (item.IsSelectable && item.Id == this.selectedItem?.Id) {
       this.drawSelect(item);
     }
     if (item.Context == Context.Action) this.toDisplayContext(item);

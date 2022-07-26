@@ -45,7 +45,10 @@
                                     <span
                                         [ngClass]="{'bi bi-eye-fill': item.IsVisible,'bi bi-eye-slash': !item.IsVisible}"></span>
                                 </button>
-
+                                <button class="btn btn-outline-primary" type="button" (click)="selectable(item)">
+                                    <span
+                                        [ngClass]="{'bi bi-unlock-fill': item.IsSelectable,'bi bi-lock': !item.IsSelectable}"></span>
+                                </button>
                                 <img class="img-fluid img-thumbnail galery-thumbnail"
                                     *ngIf="item.Actions[actions.DrawImage]"
                                     src="{{item.Actions[actions.DrawImage].Value}}">

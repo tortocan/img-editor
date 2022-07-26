@@ -2,7 +2,6 @@ import { AfterViewInit, Component, ElementRef, ViewChild } from '@angular/core';
 import { FontPickerService } from 'ngx-font-picker';
 import { Arrows } from '../arrows/arrows.component';
 import { CanvasActions, CanvasService, Context, ICanvasAction, ICanvasItem, ICanvasItemViewModel } from '../canvas.service';
-import * as WebFont from 'webfontloader';
 
 @Component({
   selector: 'app-canvas',
@@ -77,7 +76,7 @@ export class CanvasComponent implements AfterViewInit {
 
   white2transparent() {
     if (this.canvasService.selectedItem) {
-      this.canvasService.white2transparent(this.canvasService.selectedItem);
+      this.canvasService.maskColor(this.canvasService.selectedItem);
     }
   }
 
@@ -85,6 +84,10 @@ export class CanvasComponent implements AfterViewInit {
   visibility(item: ICanvasItem) {
     item.IsVisible = !item.IsVisible;
     this.render();
+  }
+
+  selectable(item: ICanvasItem) {
+    item.IsSelectable = !item.IsSelectable;
   }
 
   align(align: Arrows) {
@@ -224,11 +227,8 @@ export class CanvasComponent implements AfterViewInit {
     this.context = this.canvas.nativeElement.getContext('2d');
     this.contextAction = this.canvasAction.nativeElement.getContext('2d');
 
-
     this.canvasService.setCanvasDisplayContext(this.context);
     this.canvasService.setCanvasActionContext(this.contextAction);
-
-
 
     let loading = {
       LayerIndex: -1,
@@ -246,31 +246,45 @@ export class CanvasComponent implements AfterViewInit {
 
     let phone = {
       Url: 'assets/phone.png',
-      LayerIndex: 2,
+      LayerIndex: 1,
       Context: Context.Display,
-      IsVisible: false
+      IsVisible: true
     } as ICanvasItem;
     phone.Actions = [];
     phone.Actions[CanvasActions.DrawImage] = {
       IsPainted: false
     } as ICanvasAction
+    phone.Actions[CanvasActions.Align] = {
+      IsPainted: false,
+      Value: Arrows.Center
+    } as ICanvasAction
+
 
     let mask = {
       Url: "assets/phonet.png",
-      LayerIndex: 998,
+      LayerIndex: 99,
       Context: Context.Display,
-      IsVisible: false
+      IsVisible: true
     } as ICanvasItem
     mask.Actions = [];
     mask.Actions[CanvasActions.DrawImage] = {
       IsPainted: false
     } as ICanvasAction
+    mask.Actions[CanvasActions.Align] = {
+      IsPainted: false,
+      Value: Arrows.Center
+    } as ICanvasAction
+    mask.Actions[CanvasActions.MaskColor] = {
+      IsPainted: false,
+      Value: [255,255,255,0,true] // if white then change alpha to 0
+    } as ICanvasAction
 
     let draw = {
-      Url: "assets/index.png",
-      LayerIndex: 3,
+      Url: "assets/draw.jpg",
+      LayerIndex: 2,
       Context: Context.Display,
-      IsVisible: true
+      IsVisible: true,
+      IsSelectable: true
     } as ICanvasItem
     draw.Actions = [];
     draw.Actions[CanvasActions.DrawImage] = {
@@ -278,14 +292,16 @@ export class CanvasComponent implements AfterViewInit {
     } as ICanvasAction
 
     draw.Actions[CanvasActions.Align] = {
-      IsPainted: false,
+      IsPainted: true,
       Value: Arrows.TopRight
     } as ICanvasAction
 
     let text = {
-      LayerIndex: 4,
+      LayerIndex: 3,
       Context: Context.Display,
-      IsVisible: true
+      IsVisible: true,
+      Color: "white",
+      IsSelectable: true
     } as ICanvasItem
     text.Actions = [];
     text.Actions[CanvasActions.DrawText] = {
@@ -310,8 +326,8 @@ export class CanvasComponent implements AfterViewInit {
     ]
 
     Promise.all(imagesTasks).then(() => {
-      this.context.canvas.width = phone.Image.width;
-      this.context.canvas.height = phone.Image.height;
+      this.context.canvas.width = phone.Image.width * 2;
+      this.context.canvas.height = phone.Image.height * 2;
       this.canvasService.removeItem(loading.Id)
       this.items = this.canvasService.getSortedItems();
       this.canvasService.renderItems();
