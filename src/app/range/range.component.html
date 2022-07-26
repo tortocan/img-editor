@@ -8,7 +8,7 @@
             <span class="badge rounded-pill bg-primary p-1">{{labelValue}} </span>
         </label>
         <input class="form-range" id="rotate-range" type="range" name="range" step="{{step}}"
-            min="0" max="360" value="{{value}}" (change)="change($event)">
+            min="{{minStep}}" max="{{maxStep}}" value="{{value}}" (change)="change($event)">
 
     </div>
     <span class="bi bi-plus-circle text-primary mx-1 flex-shrink-0 align-self-end"

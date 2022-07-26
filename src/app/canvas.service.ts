@@ -487,8 +487,6 @@ export class CanvasService {
     item.Dx = item.Dx ?? 0;
     item.Dy = item.Dy ?? 0;
     this.canvasContext.globalCompositeOperation = item.GlobalCompositeOperation ?? this.canvasContext.globalCompositeOperation;
-    console.log(this.canvasActionContext.globalCompositeOperation)
-    console.log(item.GlobalCompositeOperation)
     this.canvasContext.drawImage(item.Image, item.Dx, item.Dy, item.Width, item.Height);
     item.GlobalCompositeOperation = this.canvasContext.globalCompositeOperation;
     item.Type = CanvasActions.DrawImage;

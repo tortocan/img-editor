@@ -20,11 +20,8 @@ export class CanvasComponent implements AfterViewInit {
   constructor(private canvasService: CanvasService, private fontPickerService: FontPickerService) { }
   items: ICanvasItem[] = [];
   resizeStep: number = 10;
-  zoomPercentage: number = 0;
-  pzoomPercentage: number = 0;
+  zoomPercentage: number = 1;
   rotateStep: number = 5;
-  canvasHeight: number = 500;
-  canvasWidth: number = 250;
   selectedFiles?: FileList;
   currentFile?: File;
 
@@ -106,19 +103,17 @@ export class CanvasComponent implements AfterViewInit {
 
   zoom($element: any) {
     let value = $element.target.valueAsNumber;
-    if (value == 0) {
-      this.canvasHeight = 1000
-    } else if (value == 0 || value > this.pzoomPercentage) {
-      this.canvasHeight /= (value / 100) + 1;
+
+    let ratio = this.zoomPercentage  / 10 + 1;
+    let item =  this.items[0];
+    if (value <= 1 ) {
+      this.context.canvas.width = item.Image.width;
+      this.context.canvas.height = item.Image.height;
     } else {
-      this.canvasHeight *= (value / 100) + 1;
+      this.context.canvas.width =  item.Image.width * ratio;
+      this.context.canvas.height = item.Image.height * ratio;
     }
-    this.canvasWidth = this.canvasHeight;
     this.zoomPercentage = value;
-    this.pzoomPercentage = this.zoomPercentage;
-    this.context.canvas.width = this.canvasWidth;
-    this.context.canvas.height = this.canvasHeight;
-    this.canvasService.setCanvasDisplayContext(this.context);
     this.canvasService.resetContext();
     this.render();
   }
@@ -326,8 +321,8 @@ export class CanvasComponent implements AfterViewInit {
     ]
 
     Promise.all(imagesTasks).then(() => {
-      this.context.canvas.width = phone.Image.width * 2;
-      this.context.canvas.height = phone.Image.height * 2;
+      this.context.canvas.width = phone.Image.width * this.zoomPercentage;
+      this.context.canvas.height = phone.Image.height * this.zoomPercentage;
       this.canvasService.removeItem(loading.Id)
       this.items = this.canvasService.getSortedItems();
       this.canvasService.renderItems();
