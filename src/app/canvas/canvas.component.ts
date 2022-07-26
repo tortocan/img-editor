@@ -320,8 +320,9 @@ export class CanvasComponent implements AfterViewInit {
     ]
 
     Promise.all(imagesTasks).then(() => {
-      this.context.canvas.width = phone.Image.width * 1.25;
-      this.context.canvas.height = phone.Image.height * 1.25;
+      let ratio =  1.9;
+      this.context.canvas.width = phone.Image.width * ratio;
+      this.context.canvas.height = phone.Image.height * ratio;
       this.canvasService.removeItem(loading.Id)
       this.items = this.canvasService.getSortedItems();
       this.canvasService.renderItems();
