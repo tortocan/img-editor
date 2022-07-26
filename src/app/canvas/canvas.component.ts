@@ -1,7 +1,7 @@
 import { AfterViewInit, Component, ElementRef, ViewChild } from '@angular/core';
 import { FontPickerService } from 'ngx-font-picker';
 import { Arrows } from '../arrows/arrows.component';
-import { CanvasActions, CanvasService, Context, ICanvasAction, ICanvasItem, ICanvasItemViewModel } from '../canvas.service';
+import { CanvasActions, CanvasService, Context, ICanvasAction, ICanvasItem, ICanvasItemViewModel, rgba, rgb2rgba } from '../canvas.service';
 
 @Component({
   selector: 'app-canvas',
@@ -104,13 +104,13 @@ export class CanvasComponent implements AfterViewInit {
   zoom($element: any) {
     let value = $element.target.valueAsNumber;
 
-    let ratio = this.zoomPercentage  / 10 + 1;
-    let item =  this.items[0];
-    if (value <= 1 ) {
+    let ratio = this.zoomPercentage / 10 + 1;
+    let item = this.items[0];
+    if (value <= 1) {
       this.context.canvas.width = item.Image.width;
       this.context.canvas.height = item.Image.height;
     } else {
-      this.context.canvas.width =  item.Image.width * ratio;
+      this.context.canvas.width = item.Image.width * ratio;
       this.context.canvas.height = item.Image.height * ratio;
     }
     this.zoomPercentage = value;
@@ -271,8 +271,9 @@ export class CanvasComponent implements AfterViewInit {
     } as ICanvasAction
     mask.Actions[CanvasActions.MaskColor] = {
       IsPainted: false,
-      Value: [255,255,255,0,true] // if white then change alpha to 0
+      Value: { sr: 255, sb: 255, sg: 255,overflow: true, dr: 255, dg: 255, db: 255, da: 255 } as rgb2rgba
     } as ICanvasAction
+
 
     let draw = {
       Url: "assets/draw.jpg",
@@ -321,8 +322,8 @@ export class CanvasComponent implements AfterViewInit {
     ]
 
     Promise.all(imagesTasks).then(() => {
-      this.context.canvas.width = phone.Image.width * this.zoomPercentage;
-      this.context.canvas.height = phone.Image.height * this.zoomPercentage;
+      this.context.canvas.width = phone.Image.width;
+      this.context.canvas.height = phone.Image.height;
       this.canvasService.removeItem(loading.Id)
       this.items = this.canvasService.getSortedItems();
       this.canvasService.renderItems();

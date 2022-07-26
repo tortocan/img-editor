@@ -23,7 +23,7 @@ export interface ICanvasItem {
   Context: Context,
   IsVisible: boolean,
   IsSelectable: boolean,
-  Color:any
+  Color: any
 }
 export enum CanvasActions {
   NewItem,
@@ -64,6 +64,23 @@ export interface ICanvasItemViewModel {
   IsVisible: boolean
 }
 
+export enum rgba {
+  Red,
+  Green,
+  Blue,
+  Alpha
+}
+
+export interface rgb2rgba {
+  overflow: boolean,
+  sr: number,
+  sg: number,
+  sb: number,
+  dr: number,
+  dg: number,
+  db: number,
+  da: number,
+}
 class Guid {
   static newGuid() {
     return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
@@ -341,7 +358,7 @@ export class CanvasService {
       moveItem = false;
       let pos = this.getCursorPosition(event)
       let imgData = this.canvasContext.getImageData(pos.x, pos.y, 1, 1);
-      let filterItems = this.items.filter(x =>  x.IsSelectable && x.IsVisible && x.Id != this?.selectedItem?.Id);
+      let filterItems = this.items.filter(x => x.IsSelectable && x.IsVisible && x.Id != this?.selectedItem?.Id);
 
       filterItems.sort((a, b) => (a.LayerIndex < b.LayerIndex) ? 1 : -1).every(x => {
         let isInPath = this.isPointInPath(x, event);
@@ -398,16 +415,17 @@ export class CanvasService {
   }
 
   loadFile(file: File): Promise<ICanvasItem> {
-    let layerIndexes  = this.items.filter(x=>x.LayerIndex < 900).map(x=>x.LayerIndex);
-    return new Promise<ICanvasItem>((resolve) => { let item = {
-      LayerIndex: Math.max(...layerIndexes) + 1,
-      Context: Context.Display,
-      IsVisible: true
-    } as ICanvasItem
-    item.Actions = [];
-    item.Actions[CanvasActions.DrawImage] = {
-      IsPainted: false
-    } as ICanvasAction
+    let layerIndexes = this.items.filter(x => x.LayerIndex < 900).map(x => x.LayerIndex);
+    return new Promise<ICanvasItem>((resolve) => {
+      let item = {
+        LayerIndex: Math.max(...layerIndexes) + 1,
+        Context: Context.Display,
+        IsVisible: true
+      } as ICanvasItem
+      item.Actions = [];
+      item.Actions[CanvasActions.DrawImage] = {
+        IsPainted: false
+      } as ICanvasAction
       const reader = new FileReader();
       reader.readAsDataURL(file);
       reader.onloadend = () => {
@@ -546,7 +564,7 @@ export class CanvasService {
 
   selectItem(item: ICanvasItem) {
 
-    if ( !item.IsSelectable || this.selectedItem && this.selectedItem?.Id == item.Id) {
+    if (!item.IsSelectable || this.selectedItem && this.selectedItem?.Id == item.Id) {
       return;
     }
 
@@ -658,30 +676,29 @@ export class CanvasService {
       return;
     }
 
-    let imageData =  this.canvasContext.getImageData(0,0,this.canvasContext.canvas.width,this.canvasContext.canvas.height);
-    let pixel = imageData.data;
-    let red = 0, green = 1, blue = 2, alpha = 3;
-    let rgba  = item.Actions[CanvasActions.MaskColor].Value;
-    let maskOverflow = rgba[4] ;
-    for(let x = 0, w = this.canvasContext.canvas.width; x < w; ++x) {
-      for(let y = 0, h = this.canvasContext.canvas.height; y < h; ++y) {
-        let p = (y * w + x) * 4;
-        if ( pixel[p + alpha] == 0
-          || maskOverflow && y <= item.Dy
-          || maskOverflow && y >= item.Dy + item.Height
-          || maskOverflow && x <= item.Dx
-          || maskOverflow && x >= item.Dx + item.Width
-          || pixel[p + red] >= rgba[red]
-           && pixel[p + green] >= rgba[green]
-           && pixel[p + blue] >= rgba[blue])
-         {
-          pixel[p + alpha] = rgba[alpha];
-         }
+    let imageData = this.canvasContext.getImageData(0, 0, this.canvasContext.canvas.width, this.canvasContext.canvas.height);
+    let pixelData = imageData.data;
+    let rgb2rgba = item.Actions[CanvasActions.MaskColor].Value as rgb2rgba;
+
+    for (let x = 0, w = this.canvasContext.canvas.width; x < w; ++x) {
+      for (let y = 0, h = this.canvasContext.canvas.height; y < h; ++y) {
+        let pixel = (y * w + x) * 4;
+        if (rgb2rgba.overflow && y <= item.Dy
+          || rgb2rgba.overflow && y >= item.Dy + item.Height - 5
+          || rgb2rgba.overflow && x <= item.Dx
+          || rgb2rgba.overflow && x >= item.Dx + item.Width - 5
+          || pixelData[pixel + rgba.Red] >= rgb2rgba.sr
+          && pixelData[pixel + rgba.Green] >= rgb2rgba.sg
+          && pixelData[pixel + rgba.Blue] >= rgb2rgba.sb) {
+          pixelData[pixel + rgba.Red] = rgb2rgba.dr ?? pixelData[pixel + rgba.Red]
+          pixelData[pixel + rgba.Blue] = rgb2rgba.db ?? pixelData[pixel + rgba.Blue]
+          pixelData[pixel + rgba.Green] = rgb2rgba.dg ?? pixelData[pixel + rgba.Green]
+          pixelData[pixel + rgba.Alpha] = rgb2rgba.da ?? pixelData[pixel + rgba.Alpha];
+        }
       }
     }
-
-    this.canvasContext.putImageData(imageData,0,0);
-    this.createAction(item,CanvasActions.MaskColor);
+    this.canvasContext.putImageData(imageData, 0, 0);
+    this.createAction(item, CanvasActions.MaskColor);
   }
 
   renderItem(item: ICanvasItem) {
