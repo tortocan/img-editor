@@ -1,7 +1,7 @@
 import { AfterViewInit, Component, ElementRef, ViewChild } from '@angular/core';
 import { FontPickerService } from 'ngx-font-picker';
 import { Arrows } from '../arrows/arrows.component';
-import { CanvasActions, CanvasService, Context, ICanvasAction, ICanvasItem, ICanvasItemViewModel, rgba, rgb2rgba } from '../canvas.service';
+import { CanvasActions, CanvasService, Context, ICanvasAction, ICanvasItem, ICanvasItemViewModel, rgb2rgba } from '../canvas.service';
 
 @Component({
   selector: 'app-canvas',
@@ -120,7 +120,7 @@ export class CanvasComponent implements AfterViewInit {
 
   loadItem() {
     if (this.canvasService.selectedItem) {
-      this.canvasService.renderItem(this.canvasService.selectedItem);
+      this.canvasService.renderItemActions(this.canvasService.selectedItem);
     }
   }
 
@@ -237,7 +237,7 @@ export class CanvasComponent implements AfterViewInit {
       IsPainted: false
     } as ICanvasAction
     this.canvasService.pushItem(loading);
-    this.canvasService.renderItem(loading);
+    this.canvasService.renderItemActions(loading);
 
     let phone = {
       Url: 'assets/phone.png',
@@ -320,7 +320,7 @@ export class CanvasComponent implements AfterViewInit {
     ]
 
     Promise.all(imagesTasks).then(() => {
-      let ratio =  1.9;
+      let ratio = 1.5;
       this.context.canvas.width = phone.Image.width * ratio;
       this.context.canvas.height = phone.Image.height * ratio;
       this.canvasService.removeItem(loading.Id)

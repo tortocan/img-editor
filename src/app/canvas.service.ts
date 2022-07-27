@@ -638,9 +638,11 @@ export class CanvasService {
     let filter = this.items.filter(x => x.LayerIndex >= 0).sort((x, y) => x.LayerIndex - y.LayerIndex)
     this.clearContext();
     filter.forEach(x => {
-      this.renderItem(x);
+      this.renderItemActions(x);
     });
-    this.switchContext(Context.Display)
+    if (this.selectedItem?.Id) {
+      this.drawSelect(this.selectedItem);
+    }
   }
 
   validateAction(item: ICanvasItem, action: CanvasActions): boolean {
@@ -653,8 +655,6 @@ export class CanvasService {
     }
     return false;
   }
-
-
 
   switchContext(context: Context) {
     return;
@@ -700,7 +700,7 @@ export class CanvasService {
     this.createAction(item, CanvasActions.MaskColor);
   }
 
-  renderItem(item: ICanvasItem) {
+  renderItemActions(item: ICanvasItem) {
     if (this.validateAction(item, CanvasActions.Align)) {
       this.align(item, item.Actions[CanvasActions.Align].Value as Arrows);
       item.Actions[CanvasActions.Align].IsRendered = true;
@@ -735,10 +735,6 @@ export class CanvasService {
     if (this.validateAction(item, CanvasActions.DrawText)) {
       this.drawText(item);
       item.Actions[CanvasActions.DrawText].IsRendered = true;
-    }
-
-    if (item.IsSelectable && item.Id == this.selectedItem?.Id) {
-      this.drawSelect(item);
     }
   }
 
