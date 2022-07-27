@@ -37,7 +37,8 @@ export enum CanvasActions {
 }
 export enum Context {
   Action,
-  Display
+  Display,
+  Outer
 }
 
 
@@ -112,7 +113,9 @@ export class CanvasService {
   private items: ICanvasItem[] = [];
   private canvasContext: CanvasRenderingContext2D = {} as CanvasRenderingContext2D;
   private canvasActionContext: CanvasRenderingContext2D = {} as CanvasRenderingContext2D;
+  private canvasOuterContext: CanvasRenderingContext2D = {} as CanvasRenderingContext2D;
   private canvasDisplayContext: CanvasRenderingContext2D = {} as CanvasRenderingContext2D;
+
   constructor(private http: HttpClient) { }
 
   public getSortedItems(): ICanvasItem[] {
@@ -395,6 +398,8 @@ export class CanvasService {
 
   setCanvasActionContext(canvasActionContext: CanvasRenderingContext2D) { this.canvasActionContext = canvasActionContext; }
 
+  setCanvasOuterContext(canvasOuterContext: CanvasRenderingContext2D) { this.canvasOuterContext = canvasOuterContext; }
+
   getImageFromUrl(item: ICanvasItem): Promise<ICanvasItem> {
     return new Promise<ICanvasItem>((resolve) => {
       this.getBlobImage(item.Url).subscribe((blob) => {
@@ -573,14 +578,14 @@ export class CanvasService {
     }
   }
 
-  private drawSelect(item: ICanvasItem) {
+  private drawSelect(item: ICanvasItem, dx?:number, dy?:number) {
 
     this.canvasContext.save()
     this.canvasContext.setTransform(item.RotateTransformMatrix);
     this.canvasContext.strokeStyle = "#0d6efd";
     this.canvasContext.lineWidth = 10;
-    let dx = item.Dx;
-    let dy = item.Dy;
+    dx = dx ?? item.Dx;
+    dy = dy ?? item.Dy;
     if (item.Type == CanvasActions.DrawText) {
       dx -= item.Width / 2
       dy -= item.Height / 2
@@ -657,13 +662,15 @@ export class CanvasService {
   }
 
   switchContext(context: Context) {
-    return;
     switch (context) {
       case Context.Action:
         this.canvasContext = this.canvasActionContext;
         break
       case Context.Display:
         this.canvasContext = this.canvasDisplayContext;
+        break
+      case Context.Outer:
+        this.canvasContext = this.canvasOuterContext;
         break
     }
   }

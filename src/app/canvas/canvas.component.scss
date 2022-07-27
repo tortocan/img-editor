@@ -19,11 +19,33 @@ body {
 canvas {
     // background: repeating-linear-gradient(45deg, grey 0, grey 40px, #fff 40px, #fff 80px);
     cursor: crosshair;
-    width: 100%;
+    max-width: 100%;
     max-height: 90vh;
     background-image: url(../../assets/img_bg_transparent.gif);
     background-repeat: repeat;
     border: solid 1px black;
+}
+
+.canvas-container {
+    align-items: center;
+    display: flex;
+    justify-content: center;
+    position: relative;
+    max-width: unset;
+    max-height: unset;
+}
+
+.canvas-display {
+    z-index: 2;
+    position: absolute;
+}
+
+.canvas-outer {
+    border: solid 1px blue;
+    background-image: none;
+    background-color: transparent;
+    background: transparent;
+    z-index: 1;
 }
 
 .wrapper {

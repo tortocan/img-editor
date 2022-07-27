@@ -11,11 +11,14 @@ import { CanvasActions, CanvasService, Context, ICanvasAction, ICanvasItem, ICan
 export class CanvasComponent implements AfterViewInit {
   @ViewChild('canvas')
   private canvas: ElementRef = {} as ElementRef<HTMLCanvasElement>;
+  @ViewChild('canvasOuter')
+  private canvasOuter: ElementRef = {} as ElementRef<HTMLCanvasElement>;
   @ViewChild('canvasAction')
   private canvasAction: ElementRef = {} as ElementRef<HTMLCanvasElement>;
 
   public context: CanvasRenderingContext2D = {} as CanvasRenderingContext2D;
   public contextAction: CanvasRenderingContext2D = {} as CanvasRenderingContext2D;
+  public contextOuter: CanvasRenderingContext2D = {} as CanvasRenderingContext2D;
 
   constructor(private canvasService: CanvasService, private fontPickerService: FontPickerService) { }
   items: ICanvasItem[] = [];
@@ -219,12 +222,13 @@ export class CanvasComponent implements AfterViewInit {
 
   ngAfterViewInit(): void {
 
+    this.contextOuter = this.canvasOuter.nativeElement.getContext('2d');
     this.context = this.canvas.nativeElement.getContext('2d');
     this.contextAction = this.canvasAction.nativeElement.getContext('2d');
 
     this.canvasService.setCanvasDisplayContext(this.context);
     this.canvasService.setCanvasActionContext(this.contextAction);
-
+    this.canvasService.setCanvasOuterContext(this.contextOuter)
     let loading = {
       LayerIndex: -1,
       Type: CanvasActions.DrawText,
@@ -320,9 +324,11 @@ export class CanvasComponent implements AfterViewInit {
     ]
 
     Promise.all(imagesTasks).then(() => {
-      let ratio = 1.5;
+      let ratio = 1.2;
       this.context.canvas.width = phone.Image.width * ratio;
       this.context.canvas.height = phone.Image.height * ratio;
+      this.contextOuter.canvas.width =   this.context.canvas.width;
+      this.contextOuter.canvas.height =   this.context.canvas.height;
       this.canvasService.removeItem(loading.Id)
       this.items = this.canvasService.getSortedItems();
       this.canvasService.renderItems();

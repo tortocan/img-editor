@@ -3,9 +3,15 @@
         <div class="col-6 d-flex align-items-center justify-content-center">
 
             <div>
-                <canvas class="canvas-display" #canvas width="1000px" height="2000px">
+                <div class="canvas-container">
+                    <canvas class="canvas-outer" #canvasOuter>
 
-                </canvas>
+                    </canvas>
+                    <canvas class="canvas-display" #canvas>
+
+                    </canvas>
+
+                </div>
                 <app-range [title]="'Zoom'" [value]="zoomPercentage"
                 [labelValue]="zoomPercentage.toString()" [maxStep]="9" [minStep]="1" [step]="1" (onChange)="zoom($event)">
             </app-range>
